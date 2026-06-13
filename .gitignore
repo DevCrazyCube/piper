@@ -10,11 +10,10 @@ assignments/
 # Claude's working notes & scratchpad
 claude/
 
-# Documentation folder — kept local (see note in chat)
-docs/
-
 # Raw test datasets (multi-GB) — never commit, never leave the box
 datasets/
+
+# NOTE: docs/ is intentionally TRACKED (version-controlled) — decided 2026-06-13.
 
 # ─────────────────────────────────────────────────────────────
 # Secrets & environment  (NEVER commit — security-first project)
