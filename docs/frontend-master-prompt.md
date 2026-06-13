@@ -51,19 +51,38 @@ privacy-by-design** (GDPR / ISO 27001). The dashboard is how people *see the pip
 Plus a **Design system** reference page showing the tokens.
 
 ## 4. Neon-cyber aesthetic — the POV (lean in, but disciplined)
-- **Base:** deep near-black canvas with subtly layered surfaces (not flat #000) — give it depth.
-- **Accent system:** one electric primary (e.g. cyan/blue or magenta/violet family — your pick, commit
-  to it) plus a restrained secondary. Use accents for live/active states, focus, data-viz, key edges.
-- **Glow / edge treatment:** tasteful neon — thin luminous borders, soft outer-glow on *active/live*
-  elements, gradient hairlines, scanline/grid texture used **sparingly**. Glow is seasoning, not sauce:
-  it marks what's live/important, it does NOT coat every element.
-- **Data-viz with energy:** charts use the neon palette with gradient fills, glowing line strokes,
-  crisp gridlines — expressive but precise. This is where the identity sings.
-- **Typography:** a sharp modern sans for UI + a **mono** face for IDs / logs / metrics (the "ops
-  terminal" feel is on-theme). Tabular figures for numeric columns.
-- **Motion:** subtle, fast, purposeful — pulse on live indicators, smooth transitions; reduced-motion safe.
+- **Base — "dark void":** a deep, near-black void canvas with a sense of depth and atmosphere (subtle
+  radial vignette / faint nebula or grid receding into black), not a flat fill. Surfaces float in the void.
+- **Ambient "flash" effect:** the void breathes — soft ambient light pulses / aurora-like sweeps / a
+  faint glow that drifts behind the content, and a brief flash/bloom accent on key events (a run
+  completes, an anomaly fires). Subtle and slow — atmosphere, not a strobe. Must respect reduced-motion.
+- **Liquid-glass surfaces (glassmorphism):** panels, cards, drawers, and the nav are **frosted liquid
+  glass** — translucent, background-blurred, with a faint inner highlight + thin luminous edge so they
+  read as lit glass floating over the void. Layer translucency for depth. **Keep legibility:** put a
+  subtle dark scrim behind text on glass so contrast stays AA; glass is for surfaces, not for making
+  text hard to read.
+- **Accent system:** one electric primary (cyan/blue or magenta/violet family — your pick, commit to it)
+  plus a restrained secondary. Accents drive live/active states, focus, data-viz, key edges, and the glow.
+- **Glow / edge treatment:** thin luminous borders, soft outer-glow on *active/live* elements, gradient
+  hairlines. Glow is seasoning, not sauce — it marks what's live/important, not every element.
+- **Data-viz with energy:** charts use the neon palette with gradient fills, glowing line strokes, crisp
+  gridlines over the void — expressive but precise. This is where the identity sings.
+- **Typography:** a sharp modern sans for UI + a **mono** face for IDs / logs / metrics (ops-terminal
+  feel is on-theme). Tabular figures for numeric columns.
 - **Inspiration to channel (adapt, don't copy):** a cyberpunk SOC / mission-control / observability
-  console — Grafana-meets-cyberdeck — but cleaner and more premium.
+  console — Grafana-meets-cyberdeck, with Apple-vision-style liquid glass — cleaner and more premium.
+
+## 4a. Motion & animation — use GSAP
+- **Use GSAP** as the animation engine (GSAP core + ScrollTrigger where helpful). Drive motion through
+  GSAP timelines, not just CSS transitions, so easing and sequencing are intentional and consistent.
+- **Easing on objects:** elements ease in — never pop. Use expressive eases (e.g. `power3.out` /
+  `expo.out` for entrances, `power2.inOut` for moves) defined as **shared easing tokens** so motion feels
+  like one system. Cards/panels rise + fade + settle; lists/tables **stagger** their rows in.
+- **Signature moments:** the ambient void flash/bloom, a pulse on live indicators, a glow sweep across a
+  glass edge on hover/active, smooth drawer/modal entrances, and animated chart draw-on (lines trace,
+  bars grow). Keep them fast and purposeful — polish, not spectacle.
+- **Performance + accessibility:** animate transform/opacity (GPU-friendly), no jank on dense tables;
+  fully honor `prefers-reduced-motion` (disable ambient/flash + heavy entrances, keep instant states).
 
 ## 5. Keep it READABLE and credible (don't let neon ruin it)
 - **Text stays high-contrast near-white** on dark; **neon is for accents/borders/glow/data-viz, not body
@@ -80,7 +99,8 @@ Plus a **Design system** reference page showing the tokens.
 - **Spacing** — one scale (4px base: 4/8/12/16/24/32/48).
 - **Radius** — `--radius-sm / -md / -lg / -pill` with stated usage (inputs / cards / modals / chips).
 - **Elevation** — shadow/glow tokens; say what raises vs stays flat.
-- **Motion** — duration + easing tokens.
+- **Glass** — blur amount, translucency/opacity, edge-highlight, and text-scrim tokens for the liquid-glass surfaces.
+- **Motion** — duration + **GSAP easing** tokens (named eases reused across all animations).
 - **Breakpoints** — mobile / tablet / desktop / wide as tokens.
 
 ## 7. Component library — MANDATORY, with full states
