@@ -13,12 +13,15 @@
 - [x] Pick Q4/Q5 within population constraints (recommended in `03-data-sources.md`)
 - [ ] Team sign-off on these docs
 
-## Phase 1 — Foundation & ingest (batch)
-- [ ] `docker-compose.yml`: PostgreSQL + TimescaleDB, healthchecks, encrypted volume
-- [ ] Config + secrets scaffolding (`.env.example`, structlog logging, crypto helpers)
-- [ ] DB schema + Alembic migrations (zones, identity map, core tables, RLS)
-- [ ] Batch connectors for the 4 datasets (format-aware: JSON, semicolon CSV, Parquet, CSV)
-- [ ] Raw zone + checksums + provenance
+## Phase 1 — Foundation & ingest (batch)  🛠️ in progress
+- [x] `docker-compose.yml`: PostgreSQL + TimescaleDB, healthcheck, (LUKS-backed) volume
+- [x] Config + secrets scaffolding (`.env.example`, structlog logging, AES-256-GCM crypto helpers)
+- [x] DB schema + Alembic migration 0001 (raw zone, provenance, quarantine, TimescaleDB hypertable)
+- [x] Batch connectors for the 4 datasets (PMData JSON/CSV streamed, nested-zip semicolon CSV, ARFF, parquet)
+- [x] Raw zone + content-hash idempotency + provenance + dead-letter/quarantine
+- [x] CLI (`python -m pipeline ingest <source>`) + Make targets; unit tests for date + ARFF parsers
+- [ ] Run end-to-end on a machine with Docker (ingest all 4, confirm row counts) — needs the stack up
+- [ ] Note: identity map / curated tables / RLS are Phase 2-3, not Phase 1
 
 ## Phase 2 — Process (clean / filter / normalize)
 - [ ] Encoding + delimiter + date-format normalization

@@ -1,0 +1,60 @@
+[project]
+name = "aegis-pipeline"
+version = "0.1.0"
+description = "Responsible Learning Analytics Pipeline — security-first data engineering (PR10)"
+requires-python = ">=3.12"
+dependencies = [
+    "polars>=1.0",          # big time-series + lazy parquet (Open Food Facts 7GB)
+    "pyarrow>=16.0",        # parquet backend
+    "pandas>=2.2",          # UCI CSVs (course-aligned)
+    "ijson>=3.3",           # streaming JSON for the large Fitbit arrays (100MB+/file)
+    "sqlalchemy>=2.0",
+    "psycopg[binary]>=3.2",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "alembic>=1.13",
+    "structlog>=24.1",      # structured JSON audit logs (Week 5 "Accounting")
+    "cryptography>=42.0",   # AES-256-GCM application-layer field encryption
+    "argon2-cffi>=23.1",    # credential hashing
+    "typer>=0.12",          # CLI
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "bandit>=1.7",          # SAST (Week 5)
+    "pip-audit>=2.7",       # dependency CVE scan
+]
+
+[project.scripts]
+aegis = "pipeline.cli:app"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "S", "UP"]   # incl. flake8-bandit (S) = SAST-lite
+ignore = ["S101"]                          # asserts allowed in tests
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
