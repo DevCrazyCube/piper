@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#05070c;color:#e8edf4;font-family:'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  ::selection{background:rgba(34,211,238,0.3);color:#fff;}
+  :focus{outline:none;}
+  :focus-visible{outline:2px solid rgba(34,211,238,0.7);outline-offset:2px;border-radius:8px;}
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:rgba(140,160,190,0.18);border-radius:8px;border:2px solid transparent;background-clip:padding-box;}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(140,160,190,0.3);background-clip:padding-box;}
+  @keyframes aegis-aurora{0%{transform:translate3d(-8%,-6%,0) rotate(0deg) scale(1.1);}50%{transform:translate3d(8%,6%,0) rotate(8deg) scale(1.25);}100%{transform:translate3d(-8%,-6%,0) rotate(0deg) scale(1.1);}}
+  @keyframes aegis-aurora2{0%{transform:translate3d(6%,4%,0) scale(1.2);}50%{transform:translate3d(-6%,-8%,0) scale(1.05);}100%{transform:translate3d(6%,4%,0) scale(1.2);}}
+  @keyframes aegis-pulse-ring{0%{box-shadow:0 0 0 0 rgba(34,211,238,0.45);}70%{box-shadow:0 0 0 7px rgba(34,211,238,0);}100%{box-shadow:0 0 0 0 rgba(34,211,238,0);}}
+  @keyframes aegis-shimmer{0%{background-position:-460px 0;}100%{background-position:460px 0;}}
+  @keyframes aegis-blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+  @keyframes aegis-drawer-in{from{transform:translateX(46px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  @keyframes aegis-fade-in{from{opacity:0;}to{opacity:1;}}
+  @keyframes aegis-logrow-in{0%{transform:translateY(-7px);opacity:0;background:rgba(34,211,238,0.12);}100%{transform:translateY(0);opacity:1;background:transparent;}}
+  @keyframes aegis-toast-in{0%{transform:translateY(16px) scale(0.96);opacity:0;}100%{transform:translateY(0) scale(1);opacity:1;}}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;}
+  }
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="position:relative;height:100vh;width:100%;overflow:hidden;background:radial-gradient(130% 100% at 80% -10%, #0a1018 0%, #06080d 45%, #04060a 100%);">
+
+  <div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+    <div style="position:absolute;top:-22%;left:-10%;width:60vw;height:60vw;border-radius:50%;background:radial-gradient(circle, rgba(34,211,238,0.16) 0%, rgba(34,211,238,0) 62%);filter:blur(36px);animation:aegis-aurora 26s ease-in-out infinite;"></div>
+    <div style="position:absolute;bottom:-26%;right:-14%;width:64vw;height:64vw;border-radius:50%;background:radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(168,85,247,0) 60%);filter:blur(42px);animation:aegis-aurora2 32s ease-in-out infinite;"></div>
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(140,170,210,0.05) 1px,transparent 1px),linear-gradient(90deg, rgba(140,170,210,0.05) 1px,transparent 1px);background-size:54px 54px;mask-image:radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);-webkit-mask-image:radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(140% 120% at 50% 0%, transparent 55%, rgba(2,4,8,0.7) 100%);"></div>
+  </div>
+
+  <div style="position:relative;z-index:1;display:flex;height:100%;">
+
+    <aside style="flex:none;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px;padding:18px 14px;border-right:1px solid rgba(255,255,255,0.07);background:linear-gradient(180deg, rgba(12,16,24,0.72), rgba(8,11,17,0.55));backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);transition:width 0.32s cubic-bezier(0.22,1,0.36,1);overflow:hidden;;{{ navWidthStyle }}">
+      <div style="display:flex;align-items:center;gap:11px;padding:6px 8px 16px;">
+        <div style="position:relative;width:32px;height:32px;flex:none;border-radius:9px;background:linear-gradient(150deg,#22d3ee,#a855f7);box-shadow:0 0 18px rgba(34,211,238,0.4);display:grid;place-items:center;">
+          <div style="width:13px;height:13px;border-radius:3px;background:#06080d;transform:rotate(45deg);"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;line-height:1;white-space:nowrap;;{{ navLabelStyle }}">
+          <span style="font-size:15px;font-weight:700;letter-spacing:0.04em;">AEGIS</span>
+          <span style="font-size:9.5px;font-weight:500;letter-spacing:0.22em;color:#22d3ee;margin-top:4px;font-family:'JetBrains Mono',monospace;">RLA PIPELINE</span>
+        </div>
+      </div>
+
+      <sc-for list="{{ navGroups }}" as="grp" hint-placeholder-count="3">
+        <div style="margin-top:10px;">
+          <div style="font-size:9.5px;font-weight:600;letter-spacing:0.18em;color:#5f6b7d;padding:0 10px 7px;font-family:'JetBrains Mono',monospace;white-space:nowrap;;{{ navLabelStyle }}">{{ grp.label }}</div>
+          <sc-for list="{{ grp.items }}" as="it" hint-placeholder-count="3">
+            <button onClick="{{ it.go }}" title="{{ it.name }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:3px;border-radius:10px;border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;text-align:left;font-family:inherit;transition:background 0.18s,border-color 0.18s;;{{ it.style }}" style-hover="background:rgba(34,211,238,0.07);border-color:rgba(34,211,238,0.18);">
+              <span style="width:18px;height:18px;flex:none;display:grid;place-items:center;;{{ it.iconStyle }}">{{ it.icon }}</span>
+              <span style="flex:1;font-size:13.5px;font-weight:500;white-space:nowrap;;{{ navLabelStyle }}">{{ it.name }}</span>
+              <span style="{{ it.dotStyle }}"></span>
+              <span style="font-size:10px;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:6px;white-space:nowrap;;{{ navCountStyle }}{{ it.countStyle }}">{{ it.count }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;">
+        <div style="padding:11px 12px;border-radius:11px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.16);;{{ navLabelStyle }}">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399;animation:aegis-blink 2.4s ease-in-out infinite;"></span>
+            <span style="font-size:11px;font-weight:600;color:#86efc2;white-space:nowrap;">All systems nominal</span>
+          </div>
+          <div style="font-size:10px;color:#5f7a6e;margin-top:5px;font-family:'JetBrains Mono',monospace;white-space:nowrap;">uptime 99.98% · 6 nodes</div>
+        </div>
+        <button onClick="{{ toggleNav }}" title="Collapse navigation" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:9px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);color:#9aa7b8;cursor:pointer;font-family:inherit;font-size:16px;line-height:1;" style-hover="background:rgba(255,255,255,0.05);color:#e8edf4;">{{ collapseGlyph }}</button>
+      </div>
+    </aside>
+
+    <main style="flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;">
+
+      <header style="position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:18px;padding:15px 26px;border-bottom:1px solid rgba(255,255,255,0.07);background:linear-gradient(180deg, rgba(8,11,17,0.86), rgba(8,11,17,0.62));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+        <div style="flex:0 0 auto;">
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.2em;color:#22d3ee;font-family:'JetBrains Mono',monospace;text-transform:uppercase;white-space:nowrap;">{{ pageEyebrow }}</div>
+          <h1 style="margin:4px 0 0;font-size:21px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ pageTitle }}</h1>
+        </div>
+
+        <div style="flex:1;"></div>
+
+        <label style="position:relative;display:flex;align-items:center;gap:9px;width:230px;max-width:30vw;padding:9px 13px;border-radius:11px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.03);">
+          <span style="width:13px;height:13px;border:1.6px solid #5f6b7d;border-radius:50%;flex:none;position:relative;"><span style="position:absolute;right:-4px;bottom:-4px;width:6px;height:1.6px;background:#5f6b7d;transform:rotate(45deg);"></span></span>
+          <input placeholder="Search   ⌘/" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:#e8edf4;font-family:inherit;font-size:13px;" style-focus="outline:none;" />
+        </label>
+
+        <div role="group" aria-label="Density" style="display:flex;padding:3px;border-radius:10px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.03);">
+          <button onClick="{{ setComfortable }}" style="padding:6px 11px;border:none;border-radius:7px;background:transparent;color:#9aa7b8;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:500;transition:all 0.18s;;{{ densComfortStyle }}">Comfortable</button>
+          <button onClick="{{ setCompact }}" style="padding:6px 11px;border:none;border-radius:7px;background:transparent;color:#9aa7b8;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:500;transition:all 0.18s;;{{ densCompactStyle }}">Compact</button>
+        </div>
+
+        <div style="position:relative;">
+          <button onClick="{{ toggleRoleMenu }}" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:11px;border:1px solid rgba(168,85,247,0.28);background:rgba(168,85,247,0.08);color:#e8edf4;cursor:pointer;font-family:inherit;" style-hover="border-color:rgba(168,85,247,0.5);">
+            <span style="width:24px;height:24px;border-radius:7px;background:linear-gradient(150deg,#a855f7,#22d3ee);display:grid;place-items:center;font-size:11px;font-weight:700;color:#06080d;">{{ roleInitial }}</span>
+            <span style="display:flex;flex-direction:column;line-height:1.1;text-align:left;">
+              <span style="font-size:9px;color:#9aa7b8;letter-spacing:0.1em;font-family:'JetBrains Mono',monospace;">VIEWING AS</span>
+              <span style="font-size:12.5px;font-weight:600;white-space:nowrap;">{{ roleLabel }}</span>
+            </span>
+            <span style="color:#9aa7b8;font-size:9px;">{{ roleCaret }}</span>
+          </button>
+          <sc-if value="{{ roleMenuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 8px);right:0;z-index:50;width:266px;padding:7px;border-radius:14px;border:1px solid rgba(255,255,255,0.1);background:rgba(14,18,27,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 24px 60px rgba(0,0,0,0.55);">
+              <div style="font-size:9.5px;font-weight:600;letter-spacing:0.16em;color:#5f6b7d;padding:7px 10px;font-family:'JetBrains Mono',monospace;">SWITCH PERSPECTIVE</div>
+              <sc-for list="{{ roleList }}" as="r" hint-placeholder-count="4">
+                <button onClick="{{ r.pick }}" style="width:100%;display:flex;gap:11px;align-items:flex-start;padding:10px;border:none;border-radius:10px;background:transparent;cursor:pointer;text-align:left;font-family:inherit;;{{ r.rowStyle }}" style-hover="background:rgba(255,255,255,0.05);">
+                  <span style="width:26px;height:26px;flex:none;border-radius:8px;background:{{ r.tint }};display:grid;place-items:center;font-size:11px;font-weight:700;color:#06080d;">{{ r.initial }}</span>
+                  <span style="flex:1;min-width:0;">
+                    <span style="display:block;font-size:13px;font-weight:600;color:#e8edf4;">{{ r.label }}</span>
+                    <span style="display:block;font-size:11px;color:#8593a5;margin-top:2px;">{{ r.scope }}</span>
+                  </span>
+                  <span style="color:#22d3ee;font-size:13px;align-self:center;;{{ r.checkStyle }}">✓</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+
+        <button title="Notifications" style="position:relative;width:40px;height:40px;flex:none;border-radius:11px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.03);color:#9aa7b8;cursor:pointer;display:grid;place-items:center;" style-hover="color:#e8edf4;border-color:rgba(255,255,255,0.18);">
+          <span style="width:13px;height:13px;border:1.7px solid currentColor;border-radius:50% 50% 6px 6px;border-bottom:none;position:relative;"></span>
+          <span style="position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:#fbbf24;border:1.5px solid #0b0e15;"></span>
+        </button>
+      </header>
+
+      <div ref="{{ scrollRef }}" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;">
+        <div style="max-width:1480px;margin:0 auto;padding:28px 26px 90px;">
+
+          <!-- ============ OVERVIEW ============ -->
+          <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <section data-screen-label="Overview" data-anim="region" style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px;">
+              <sc-for list="{{ vitals }}" as="k" hint-placeholder-count="6">
+                <div data-anim="rise" style="position:relative;padding:15px 16px;border-radius:15px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden;" style-hover="border-color:rgba(34,211,238,0.22);">
+                  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent);"></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+                    <span style="font-size:10.5px;color:#8593a5;font-weight:500;line-height:1.3;">{{ k.label }}</span>
+                    <span style="width:7px;height:7px;flex:none;border-radius:50%;;{{ k.dotStyle }}"></span>
+                  </div>
+                  <div style="margin-top:11px;display:flex;align-items:baseline;gap:4px;">
+                    <span data-count="{{ k.value }}" data-suffix="{{ k.suffix }}" style="font-size:25px;font-weight:600;letter-spacing:-0.02em;font-family:'JetBrains Mono',monospace;color:#f3f7fc;">{{ k.display }}</span>
+                  </div>
+                  <div style="margin-top:7px;font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;;{{ k.trendStyle }}">{{ k.trend }}</div>
+                </div>
+              </sc-for>
+            </section>
+
+            <section data-anim="region" style="position:relative;padding:24px 26px 28px;border-radius:20px;border:1px solid rgba(255,255,255,0.09);background:linear-gradient(165deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow:hidden;margin-bottom:22px;">
+              <div style="position:absolute;inset:0;background:radial-gradient(80% 120% at 50% -10%, rgba(34,211,238,0.07), transparent 60%);pointer-events:none;"></div>
+              <div style="position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+                <div>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#22d3ee;box-shadow:0 0 12px #22d3ee;animation:aegis-blink 1.8s ease-in-out infinite;"></span>
+                    <span style="font-size:10px;font-weight:600;letter-spacing:0.2em;color:#22d3ee;font-family:'JetBrains Mono',monospace;">LIVE PIPELINE</span>
+                  </div>
+                  <h2 style="margin:9px 0 0;font-size:18px;font-weight:600;">Ingest → Validate → Clean → Normalize → Pseudonymize → Encrypt → Store → Retain</h2>
+                  <p style="margin:6px 0 0;font-size:12.5px;color:#8593a5;max-width:560px;">Eight controlled stages. Every record is cleaned, pseudonymised and encrypted before it ever rests — and auto-erased on schedule.</p>
+                </div>
+                <div style="display:flex;gap:22px;">
+                  <div><div style="font-size:9.5px;color:#8593a5;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;">THROUGHPUT</div><div style="font-size:20px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#22d3ee;"><span data-count="2840" data-suffix=" r/s">2,840 r/s</span></div></div>
+                  <div><div style="font-size:9.5px;color:#8593a5;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;">END-TO-END</div><div style="font-size:20px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#e8edf4;">1.84<span style="font-size:12px;color:#8593a5;">s</span></div></div>
+                </div>
+              </div>
+
+              <div data-pipeline style="position:relative;display:flex;flex-wrap:wrap;align-items:stretch;gap:0;">
+                <sc-for list="{{ stages }}" as="s" hint-placeholder-count="8">
+                  <div style="position:relative;display:flex;align-items:center;flex:1 1 200px;min-width:170px;">
+                    <button onClick="{{ s.open }}" data-stage style="position:relative;z-index:2;flex:1;text-align:left;padding:14px;border-radius:14px;cursor:pointer;font-family:inherit;color:inherit;transition:transform 0.25s cubic-bezier(0.22,1,0.36,1),border-color 0.25s;overflow:hidden;;{{ s.cardStyle }}" style-hover="transform:translateY(-3px);border-color:rgba(34,211,238,0.4);">
+                      <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+                        <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#5f6b7d;">{{ s.idx }}</span>
+                        <span style="font-size:8.5px;font-weight:600;letter-spacing:0.08em;padding:2px 6px;border-radius:5px;font-family:'JetBrains Mono',monospace;;{{ s.pillStyle }}">{{ s.statusLabel }}</span>
+                      </div>
+                      <div data-breathe="{{ s.breathe }}" style="margin-top:9px;display:flex;align-items:center;gap:9px;">
+                        <span style="width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;;{{ s.iconStyle }}">{{ s.icon }}</span>
+                        <span style="font-size:13.5px;font-weight:600;line-height:1.15;">{{ s.name }}</span>
+                      </div>
+                      <div style="margin-top:11px;font-size:16px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#f3f7fc;">{{ s.throughput }}<span style="font-size:9.5px;color:#5f6b7d;font-weight:400;"> r/s</span></div>
+                      <div style="margin-top:5px;font-size:10px;color:#22d3ee;font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;">{{ s.note }}</div>
+                    </button>
+                    <sc-if value="{{ s.hasConnector }}" hint-placeholder-val="{{ true }}">
+                      <div data-connector style="position:relative;width:30px;height:2px;flex:none;align-self:center;background:linear-gradient(90deg, rgba(34,211,238,0.35), rgba(168,85,247,0.35));margin:0 -2px;">
+                        <span data-pulse style="position:absolute;top:50%;left:0;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:#22d3ee;box-shadow:0 0 10px 2px rgba(34,211,238,0.8);"></span>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+
+            <section data-anim="region" style="display:grid;grid-template-columns:1.35fr 1fr;gap:18px;margin-bottom:22px;">
+              <div style="padding:20px 22px;border-radius:18px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.012));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                  <div><div style="font-size:9.5px;letter-spacing:0.18em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">OPERATIONS</div><h3 style="margin:5px 0 0;font-size:15px;font-weight:600;">Recent runs</h3></div>
+                  <button onClick="{{ goRuns }}" style="font-size:11.5px;color:#22d3ee;background:transparent;border:1px solid rgba(34,211,238,0.25);border-radius:8px;padding:6px 11px;cursor:pointer;font-family:inherit;" style-hover="background:rgba(34,211,238,0.1);">View all →</button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:7px;">
+                  <sc-for list="{{ recentRuns }}" as="r" hint-placeholder-count="5">
+                    <div data-row style="display:grid;grid-template-columns:118px 1fr auto auto;align-items:center;gap:14px;padding:11px 13px;border-radius:11px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.018);" style-hover="background:rgba(255,255,255,0.045);border-color:rgba(255,255,255,0.1);">
+                      <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#9aa7b8;">{{ r.id }}</span>
+                      <span style="font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.source }}</span>
+                      <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#8593a5;white-space:nowrap;">{{ r.flow }}</span>
+                      <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;font-family:'JetBrains Mono',monospace;white-space:nowrap;;{{ r.pillStyle }}">{{ r.outcome }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="padding:20px 22px;border-radius:18px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.012));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
+                <div style="margin-bottom:16px;"><div style="font-size:9.5px;letter-spacing:0.18em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">FRESHNESS</div><h3 style="margin:5px 0 0;font-size:15px;font-weight:600;">Ingest health</h3></div>
+                <div style="display:flex;flex-direction:column;gap:13px;">
+                  <sc-for list="{{ ingestHealth }}" as="h" hint-placeholder-count="5">
+                    <div data-row style="display:flex;align-items:center;gap:13px;">
+                      <span style="width:8px;height:8px;flex:none;border-radius:50%;;{{ h.dotStyle }}"></span>
+                      <div style="flex:1;min-width:0;">
+                        <div style="display:flex;justify-content:space-between;gap:8px;"><span style="font-size:12px;font-weight:500;">{{ h.name }}</span><span style="font-size:10.5px;color:#8593a5;font-family:'JetBrains Mono',monospace;">{{ h.fresh }}</span></div>
+                        <div style="margin-top:6px;height:5px;border-radius:3px;background:rgba(255,255,255,0.06);overflow:hidden;"><div data-bar style="height:100%;border-radius:3px;;{{ h.barStyle }}"></div></div>
+                      </div>
+                      <span style="font-size:10px;color:#8593a5;font-family:'JetBrains Mono',monospace;white-space:nowrap;">{{ h.note }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </section>
+
+            <section data-anim="region" style="display:flex;align-items:center;gap:14px;padding:11px 18px;border-radius:13px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.022);overflow:hidden;">
+              <span style="font-size:9px;font-weight:600;letter-spacing:0.16em;color:#06080d;background:#22d3ee;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;flex:none;">EVENTS</span>
+              <div style="flex:1;min-width:0;display:flex;gap:30px;font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#9aa7b8;white-space:nowrap;overflow:hidden;">
+                <sc-for list="{{ tickerEvents }}" as="e" hint-placeholder-count="4">
+                  <span style="display:flex;gap:8px;align-items:center;"><span style="width:6px;height:6px;border-radius:50%;;{{ e.dotStyle }}"></span>{{ e.text }}</span>
+                </sc-for>
+              </div>
+            </section>
+          </div>
+          </sc-if>
+
+          <!-- ============ RUNS ============ -->
+          <sc-if value="{{ isRuns }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Runs">
+            <section data-anim="region" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:13px 16px;margin-bottom:16px;border-radius:14px;border:1px solid rgba(255,255,255,0.09);background:linear-gradient(165deg, rgba(16,20,29,0.82), rgba(12,15,22,0.7));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+              <div role="group" aria-label="Outcome" style="display:flex;padding:3px;border-radius:10px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.03);">
+                <sc-for list="{{ outcomeSegs }}" as="o" hint-placeholder-count="4">
+                  <button onClick="{{ o.pick }}" style="display:flex;align-items:center;gap:7px;padding:7px 13px;border:none;border-radius:7px;background:transparent;color:#9aa7b8;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;transition:all 0.18s;{{ o.style }}" style-hover="color:#e8edf4;">
+                    <span style="width:6px;height:6px;border-radius:50%;{{ o.dotStyle }}"></span>{{ o.label }}
+                  </button>
+                </sc-for>
+              </div>
+              <div style="position:relative;">
+                <select onChange="{{ setSource }}" value="{{ runSource }}" style="appearance:none;-webkit-appearance:none;padding:8px 30px 8px 13px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#e8edf4;font-family:inherit;font-size:12px;cursor:pointer;" style-focus="border-color:rgba(34,211,238,0.4);outline:none;">
+                  <sc-for list="{{ sourceOptions }}" as="so" hint-placeholder-count="5">
+                    <option value="{{ so.value }}" style="background:#0e121b;color:#e8edf4;">{{ so.label }}</option>
+                  </sc-for>
+                </select>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#8593a5;font-size:9px;">▼</span>
+              </div>
+              <div style="position:relative;">
+                <select style="appearance:none;-webkit-appearance:none;padding:8px 30px 8px 13px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#e8edf4;font-family:inherit;font-size:12px;cursor:pointer;" style-focus="border-color:rgba(34,211,238,0.4);outline:none;">
+                  <option style="background:#0e121b;">Last 24 hours</option>
+                  <option style="background:#0e121b;">Last 7 days</option>
+                  <option style="background:#0e121b;">Last 30 days</option>
+                </select>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:#8593a5;font-size:9px;">▼</span>
+              </div>
+              <label style="display:flex;align-items:center;gap:9px;flex:1;min-width:160px;padding:8px 13px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);">
+                <span style="width:12px;height:12px;border:1.6px solid #5f6b7d;border-radius:50%;flex:none;position:relative;"><span style="position:absolute;right:-4px;bottom:-4px;width:6px;height:1.6px;background:#5f6b7d;transform:rotate(45deg);"></span></span>
+                <input value="{{ runQuery }}" onInput="{{ setQuery }}" placeholder="Search run id or source…" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:#e8edf4;font-family:inherit;font-size:12.5px;" />
+              </label>
+              <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#8593a5;white-space:nowrap;"><span style="color:#22d3ee;">{{ runCount }}</span> / {{ runTotal }} runs</span>
+            </section>
+
+            <section data-anim="region" style="border-radius:16px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(165deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow-x:auto;overflow-y:hidden;">
+              <div style="display:grid;{{ runGrid }}align-items:center;gap:10px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.022);">
+                <sc-for list="{{ runCols }}" as="c" hint-placeholder-count="7">
+                  <button onClick="{{ c.sort }}" style="display:flex;align-items:center;gap:6px;border:none;background:transparent;color:{{ c.color }};cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:0.12em;padding:0;{{ c.justify }}" style-hover="color:#e8edf4;">{{ c.label }}<span style="font-size:8px;color:#22d3ee;">{{ c.arrow }}</span></button>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ runsEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:11px;padding:64px 20px;text-align:center;">
+                  <div style="width:48px;height:48px;border-radius:13px;border:1px dashed rgba(255,255,255,0.18);display:grid;place-items:center;color:#5f6b7d;font-size:20px;">∅</div>
+                  <div style="font-size:14px;font-weight:600;color:#e8edf4;">No runs match these filters</div>
+                  <div style="font-size:12px;color:#8593a5;">Try widening the outcome, source, or time range.</div>
+                  <button onClick="{{ clearFilters }}" style="margin-top:4px;padding:8px 15px;border-radius:9px;border:1px solid rgba(34,211,238,0.3);background:rgba(34,211,238,0.08);color:#22d3ee;cursor:pointer;font-family:inherit;font-size:12px;" style-hover="background:rgba(34,211,238,0.15);">Clear filters</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ runsHasRows }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <sc-for list="{{ runRows }}" as="r" hint-placeholder-count="8">
+                  <button data-row onClick="{{ r.open }}" style="width:100%;display:grid;{{ runGrid }}align-items:center;gap:10px;{{ runRowPad }}border:none;border-bottom:1px solid rgba(255,255,255,0.04);background:transparent;cursor:pointer;text-align:left;font-family:inherit;color:inherit;transition:background 0.15s;{{ r.zebra }}" style-hover="background:rgba(34,211,238,0.06);">
+                    <span style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#22d3ee;">{{ r.id }}</span>
+                    <span style="font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.source }}</span>
+                    <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#9aa7b8;">{{ r.flow }}</span>
+                    <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#8593a5;text-align:center;">{{ r.transforms }}</span>
+                    <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#8593a5;text-align:center;">{{ r.duration }}</span>
+                    <span style="justify-self:start;font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;font-family:'JetBrains Mono',monospace;{{ r.pillStyle }}">{{ r.outcome }}</span>
+                    <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;text-align:center;{{ r.qStyle }}">{{ r.quarantined }}</span>
+                  </button>
+                </sc-for>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 20px;border-top:1px solid rgba(255,255,255,0.07);">
+                  <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#8593a5;">{{ pageInfo }}</span>
+                  <div style="display:flex;gap:8px;">
+                    <button onClick="{{ prevPage }}" style="padding:7px 13px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:#e8edf4;cursor:pointer;font-family:inherit;font-size:12px;{{ prevStyle }}" style-hover="border-color:rgba(34,211,238,0.4);">← Prev</button>
+                    <button onClick="{{ nextPage }}" style="padding:7px 13px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:#e8edf4;cursor:pointer;font-family:inherit;font-size:12px;{{ nextStyle }}" style-hover="border-color:rgba(34,211,238,0.4);">Next →</button>
+                  </div>
+                </div>
+              </div>
+              </sc-if>
+            </section>
+
+            <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div onClick="{{ closeDrawer }}" style="position:fixed;inset:0;z-index:60;background:rgba(2,4,8,0.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:aegis-fade-in 0.25s ease;"></div>
+              <aside role="dialog" aria-label="Run detail" style="position:fixed;top:0;right:0;bottom:0;z-index:61;width:560px;max-width:94vw;display:flex;flex-direction:column;border-left:1px solid rgba(34,211,238,0.18);background:linear-gradient(200deg, rgba(14,18,27,0.97), rgba(9,12,18,0.97));backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);box-shadow:-30px 0 70px rgba(0,0,0,0.55);animation:aegis-drawer-in 0.36s cubic-bezier(0.22,1,0.36,1);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 24px 18px;border-bottom:1px solid rgba(255,255,255,0.08);">
+                  <div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#22d3ee;">{{ drawerRun.id }}</span>
+                      <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;font-family:'JetBrains Mono',monospace;{{ drawerRun.pillStyle }}">{{ drawerRun.outcome }}</span>
+                    </div>
+                    <div style="margin-top:7px;font-size:13px;font-weight:500;">{{ drawerRun.source }}</div>
+                    <div style="margin-top:4px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#8593a5;">{{ drawerRun.meta }}</div>
+                  </div>
+                  <button onClick="{{ closeDrawer }}" style="width:34px;height:34px;flex:none;border-radius:9px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:#9aa7b8;cursor:pointer;font-size:16px;" style-hover="color:#e8edf4;border-color:rgba(255,255,255,0.25);">✕</button>
+                </div>
+                <div style="flex:1;min-height:0;overflow-y:auto;padding:22px 24px 30px;">
+                  <div style="font-size:9.5px;font-weight:600;letter-spacing:0.16em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;margin-bottom:14px;">STAGE-BY-STAGE TIMELINE</div>
+                  <div style="display:flex;flex-direction:column;">
+                    <sc-for list="{{ drawerStages }}" as="ds" hint-placeholder-count="8">
+                      <div style="display:grid;grid-template-columns:26px 1fr;gap:13px;">
+                        <div style="display:flex;flex-direction:column;align-items:center;">
+                          <span style="width:13px;height:13px;border-radius:50%;border:2px solid {{ ds.color }};background:{{ ds.fill }};flex:none;margin-top:3px;"></span>
+                          <span style="{{ ds.lineStyle }}flex:1;width:2px;background:rgba(255,255,255,0.08);"></span>
+                        </div>
+                        <div style="padding-bottom:16px;min-width:0;">
+                          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                            <span style="font-size:13px;font-weight:600;">{{ ds.name }}</span>
+                            <span style="font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#8593a5;">{{ ds.ms }}</span>
+                          </div>
+                          <div style="margin-top:4px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#9aa7b8;">{{ ds.flow }} · {{ ds.transforms }}</div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+                    <div style="padding:13px 15px;border-radius:11px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);">
+                      <div style="font-size:9.5px;letter-spacing:0.14em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">LINEAGE</div>
+                      <div style="margin-top:7px;font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#9aa7b8;line-height:1.7;">{{ drawerRun.lineage }}</div>
+                    </div>
+                    <div style="padding:13px 15px;border-radius:11px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);">
+                      <div style="font-size:9.5px;letter-spacing:0.14em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">ERRORS</div>
+                      <div style="margin-top:7px;font-size:11.5px;font-family:'JetBrains Mono',monospace;color:{{ drawerRun.errColor }};line-height:1.6;">{{ drawerRun.errors }}</div>
+                    </div>
+                  </div>
+
+                  <sc-if value="{{ drawerRun.hasQ }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:20px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+                      <div style="font-size:9.5px;font-weight:600;letter-spacing:0.16em;color:#fbbf24;font-family:'JetBrains Mono',monospace;">QUARANTINE · {{ drawerRun.quarantined }} ROWS</div>
+                      <span style="font-size:10px;color:#8593a5;font-family:'JetBrains Mono',monospace;">dead-letter queue</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                      <sc-for list="{{ drawerQuarantine }}" as="q" hint-placeholder-count="3">
+                        <div style="padding:11px 13px;border-radius:11px;border:1px solid rgba(251,191,36,0.18);background:rgba(251,191,36,0.05);">
+                          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                            <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#fbbf24;">{{ q.id }}</span>
+                            <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8593a5;">{{ q.field }}</span>
+                          </div>
+                          <div style="margin-top:6px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#9aa7b8;">raw: <span style="color:#e8edf4;">{{ q.raw }}</span></div>
+                          <div style="margin-top:3px;font-size:11px;color:#f0c674;">{{ q.reason }}</div>
+                          <div style="margin-top:9px;display:flex;gap:8px;">
+                            <button style="padding:5px 11px;border-radius:7px;border:1px solid rgba(34,211,238,0.3);background:rgba(34,211,238,0.08);color:#22d3ee;cursor:pointer;font-family:inherit;font-size:11px;" style-hover="background:rgba(34,211,238,0.16);">Reprocess</button>
+                            <button style="padding:5px 11px;border-radius:7px;border:1px solid rgba(248,113,113,0.3);background:rgba(248,113,113,0.06);color:#f87171;cursor:pointer;font-family:inherit;font-size:11px;" style-hover="background:rgba(248,113,113,0.14);">Discard</button>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="margin-top:10px;font-size:10px;font-family:'JetBrains Mono',monospace;color:#5f6b7d;">⛨ all actions are audit-logged</div>
+                  </div>
+                  </sc-if>
+                </div>
+              </aside>
+            </div>
+            </sc-if>
+          </div>
+          </sc-if>
+
+          <!-- ============ SOURCES ============ -->
+          <sc-if value="{{ isSources }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Sources">
+            <section data-anim="region" style="margin-bottom:22px;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:13px;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#f87171;box-shadow:0 0 9px #f87171;animation:aegis-blink 1.6s ease-in-out infinite;"></span>
+                <span style="font-size:10px;font-weight:600;letter-spacing:0.18em;color:#f87171;font-family:'JetBrains Mono',monospace;">SCHEMA DRIFT &amp; SLA ALERTS</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px;">
+                <sc-for list="{{ driftAlerts }}" as="a" hint-placeholder-count="2">
+                  <div style="display:flex;gap:14px;padding:16px 18px;border-radius:15px;border:1px solid {{ a.edge }};background:{{ a.bg }};backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);">
+                    <span style="width:38px;height:38px;flex:none;border-radius:11px;display:grid;place-items:center;font-size:18px;color:{{ a.color }};background:{{ a.iconBg }};">{{ a.glyph }}</span>
+                    <div style="flex:1;min-width:0;">
+                      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                        <span style="font-size:13.5px;font-weight:600;color:#f3f7fc;">{{ a.title }}</span>
+                        <span style="font-size:9px;font-weight:600;letter-spacing:0.08em;padding:2px 7px;border-radius:5px;font-family:'JetBrains Mono',monospace;color:{{ a.color }};background:{{ a.iconBg }};">{{ a.sev }}</span>
+                      </div>
+                      <p style="margin:6px 0 0;font-size:12px;color:#9aa7b8;line-height:1.5;">{{ a.detail }}</p>
+                      <button onClick="{{ goRuns }}" style="margin-top:10px;font-size:11px;color:{{ a.color }};background:transparent;border:1px solid {{ a.edge }};border-radius:7px;padding:5px 11px;cursor:pointer;font-family:'JetBrains Mono',monospace;" style-hover="background:{{ a.iconBg }};">{{ a.cta }} →</button>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+
+            <section data-anim="region">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;">
+                <div><div style="font-size:9.5px;letter-spacing:0.18em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">CONNECTED SOURCES</div><h2 style="margin:5px 0 0;font-size:16px;font-weight:600;">{{ sourceCount }} ingest streams &amp; datasets</h2></div>
+                <span style="font-size:11px;color:#8593a5;font-family:'JetBrains Mono',monospace;">click a source for field-level detail</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(296px,1fr));gap:16px;">
+                <sc-for list="{{ sourceCards }}" as="s" hint-placeholder-count="6">
+                  <button data-anim="rise" onClick="{{ s.open }}" style="position:relative;text-align:left;padding:18px;border-radius:16px;border:1px solid {{ s.edge }};background:linear-gradient(165deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);cursor:pointer;font-family:inherit;color:inherit;overflow:hidden;{{ s.glow }}transition:transform 0.25s cubic-bezier(0.22,1,0.36,1),border-color 0.25s;" style-hover="transform:translateY(-4px);">
+                    <div style="display:flex;align-items:flex-start;gap:12px;">
+                      <span style="width:40px;height:40px;flex:none;border-radius:11px;display:grid;place-items:center;font-size:17px;color:{{ s.color }};background:{{ s.iconBg }};">{{ s.glyph }}</span>
+                      <div style="flex:1;min-width:0;">
+                        <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</div>
+                        <div style="margin-top:3px;font-size:9.5px;font-family:'JetBrains Mono',monospace;color:#8593a5;letter-spacing:0.1em;">{{ s.type }}</div>
+                      </div>
+                      <span style="font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;color:{{ s.color }};background:{{ s.iconBg }};white-space:nowrap;">{{ s.sla }}</span>
+                    </div>
+                    <svg viewBox="0 0 260 52" preserveAspectRatio="none" style="width:100%;height:46px;margin-top:15px;display:block;overflow:visible;">
+                      <defs><linearGradient id="sg-{{ s.gid }}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="{{ s.color }}" stop-opacity="0.28"></stop><stop offset="100%" stop-color="{{ s.color }}" stop-opacity="0"></stop></linearGradient></defs>
+                      <path d="{{ s.area }}" fill="url(#sg-{{ s.gid }})"></path>
+                      <path data-draw d="{{ s.line }}" fill="none" stroke="{{ s.color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <div style="display:flex;gap:7px;margin-top:15px;">
+                      <sc-for list="{{ s.chips }}" as="ch" hint-placeholder-count="3">
+                        <span style="flex:1;text-align:center;padding:7px 4px;border-radius:8px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);">
+                          <span style="display:block;font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;color:{{ ch.color }};">{{ ch.val }}</span>
+                          <span style="display:block;font-size:8.5px;color:#8593a5;letter-spacing:0.06em;margin-top:2px;">{{ ch.label }}</span>
+                        </span>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,0.06);font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#8593a5;">
+                      <span style="display:flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:{{ s.color }};box-shadow:0 0 6px {{ s.color }};"></span>{{ s.fresh }}</span>
+                      <span>lag {{ s.lag }}</span>
+                    </div>
+                  </button>
+                </sc-for>
+              </div>
+            </section>
+
+            <sc-if value="{{ srcDrawerOpen }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div onClick="{{ closeSrc }}" style="position:fixed;inset:0;z-index:60;background:rgba(2,4,8,0.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:aegis-fade-in 0.25s ease;"></div>
+              <aside role="dialog" aria-label="Source detail" style="position:fixed;top:0;right:0;bottom:0;z-index:61;width:580px;max-width:94vw;display:flex;flex-direction:column;border-left:1px solid rgba(34,211,238,0.18);background:linear-gradient(200deg, rgba(14,18,27,0.97), rgba(9,12,18,0.97));backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);box-shadow:-30px 0 70px rgba(0,0,0,0.55);animation:aegis-drawer-in 0.36s cubic-bezier(0.22,1,0.36,1);">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 24px 18px;border-bottom:1px solid rgba(255,255,255,0.08);">
+                  <div style="display:flex;gap:13px;align-items:center;">
+                    <span style="width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:18px;color:{{ srcDrawer.color }};background:{{ srcDrawer.iconBg }};">{{ srcDrawer.glyph }}</span>
+                    <div>
+                      <div style="font-size:16px;font-weight:600;">{{ srcDrawer.name }}</div>
+                      <div style="margin-top:3px;font-size:11px;font-family:'JetBrains Mono',monospace;color:#8593a5;letter-spacing:0.08em;">{{ srcDrawer.type }} · {{ srcDrawer.fresh }}</div>
+                    </div>
+                  </div>
+                  <button onClick="{{ closeSrc }}" style="width:34px;height:34px;flex:none;border-radius:9px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:#9aa7b8;cursor:pointer;font-size:16px;" style-hover="color:#e8edf4;border-color:rgba(255,255,255,0.25);">✕</button>
+                </div>
+                <div style="flex:1;min-height:0;overflow-y:auto;padding:22px 24px 30px;">
+                  <div style="font-size:9.5px;font-weight:600;letter-spacing:0.16em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;margin-bottom:12px;">QUALITY OVER TIME · 14 DAYS</div>
+                  <div style="padding:16px;border-radius:13px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);">
+                    <svg viewBox="0 0 480 120" preserveAspectRatio="none" style="width:100%;height:120px;display:block;overflow:visible;">
+                      <line x1="0" y1="30" x2="480" y2="30" stroke="rgba(255,255,255,0.05)" stroke-width="1"></line>
+                      <line x1="0" y1="60" x2="480" y2="60" stroke="rgba(255,255,255,0.05)" stroke-width="1"></line>
+                      <line x1="0" y1="90" x2="480" y2="90" stroke="rgba(255,255,255,0.05)" stroke-width="1"></line>
+                      <path d="{{ srcDrawer.areaBig }}" fill="url(#sg-{{ srcDrawer.gid }})"></path>
+                      <path data-draw d="{{ srcDrawer.lineBig }}" fill="none" stroke="{{ srcDrawer.color }}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <div style="display:flex;justify-content:space-between;margin-top:9px;font-size:9.5px;font-family:'JetBrains Mono',monospace;color:#5f6b7d;"><span>14d ago</span><span>quality score %</span><span>now</span></div>
+                  </div>
+
+                  <div style="font-size:9.5px;font-weight:600;letter-spacing:0.16em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;margin:22px 0 12px;">FIELD-LEVEL SCHEMA</div>
+                  <div style="border-radius:13px;border:1px solid rgba(255,255,255,0.07);overflow:hidden;">
+                    <sc-for list="{{ srcDrawer.schema }}" as="f" hint-placeholder-count="5">
+                      <div style="display:grid;grid-template-columns:1.4fr 1fr auto;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.012);">
+                        <span style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#e8edf4;">{{ f.name }}</span>
+                        <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#a855f7;">{{ f.type }}</span>
+                        <span style="justify-self:end;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;color:{{ f.qColor }};background:{{ f.qBg }};">{{ f.quality }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <sc-if value="{{ srcDrawer.isUci }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:22px;">
+                    <div style="font-size:9.5px;font-weight:600;letter-spacing:0.16em;color:#22d3ee;font-family:'JetBrains Mono',monospace;margin-bottom:12px;">HARMONISATION MAPPING</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                      <sc-for list="{{ srcDrawer.mapping }}" as="m" hint-placeholder-count="3">
+                        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;border:1px solid rgba(34,211,238,0.14);background:rgba(34,211,238,0.04);">
+                          <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#9aa7b8;">{{ m.from }}</span>
+                          <span style="color:#22d3ee;font-size:13px;">→</span>
+                          <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#e8edf4;text-align:right;">{{ m.to }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="margin-top:10px;font-size:10px;font-family:'JetBrains Mono',monospace;color:#5f6b7d;">⇄ scales reconciled to canonical units · {{ srcDrawer.harmonNote }}</div>
+                  </div>
+                  </sc-if>
+                </div>
+              </aside>
+            </div>
+            </sc-if>
+          </div>
+          </sc-if>
+
+          <!-- ============ ANALYTICS ============ -->
+          <sc-if value="{{ isAnalytics }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Analytics">
+            <section data-anim="region" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
+              <div style="display:flex;gap:5px;padding:4px;border-radius:12px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.025);flex-wrap:wrap;">
+                <sc-for list="{{ domainTabs }}" as="t" hint-placeholder-count="5">
+                  <button onClick="{{ t.pick }}" style="display:flex;align-items:center;gap:7px;padding:8px 15px;border:none;border-radius:9px;background:transparent;color:#9aa7b8;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:500;transition:all 0.18s;{{ t.style }}" style-hover="color:#e8edf4;">
+                    <span style="width:7px;height:7px;border-radius:2px;{{ t.dotStyle }}"></span>{{ t.label }}
+                  </button>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:11px;border:1px solid rgba(52,211,153,0.2);background:rgba(52,211,153,0.06);">
+                <span style="width:15px;height:15px;border-radius:50%;border:1.6px solid #34d399;display:grid;place-items:center;color:#34d399;font-size:9px;">⛨</span>
+                <span style="font-size:11px;color:#86efc2;font-family:'JetBrains Mono',monospace;">aggregate only · no individual is identifiable</span>
+              </div>
+            </section>
+
+            <sc-if value="{{ synthNote }}" hint-placeholder-val="{{ false }}">
+              <div data-anim="region" style="display:flex;align-items:center;gap:12px;padding:13px 17px;margin-bottom:18px;border-radius:13px;border:1px dashed rgba(251,191,36,0.3);background:rgba(251,191,36,0.05);">
+                <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;color:#06080d;background:#fbbf24;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;">SYNTHETIC</span>
+                <span style="font-size:12px;color:#f0c674;">Generated data for demonstration. Not derived from real subjects — safe to explore freely.</span>
+              </div>
+            </sc-if>
+
+            <section data-anim="region" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;">
+              <sc-for list="{{ queryCards }}" as="q" hint-placeholder-count="5">
+                <button data-anim="rise" onClick="{{ q.open }}" style="text-align:left;padding:20px;border-radius:17px;border:1px solid {{ q.edge }};background:linear-gradient(165deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);cursor:pointer;font-family:inherit;color:inherit;overflow:hidden;transition:transform 0.25s cubic-bezier(0.22,1,0.36,1),border-color 0.25s;" style-hover="transform:translateY(-4px);border-color:rgba(34,211,238,0.32);">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                    <span style="font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#22d3ee;">{{ q.id }}</span>
+                    <span style="font-size:9px;font-weight:600;letter-spacing:0.07em;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;color:{{ q.badgeColor }};background:{{ q.badgeBg }};">{{ q.badge }}</span>
+                  </div>
+                  <h3 style="margin:11px 0 0;font-size:15px;font-weight:600;line-height:1.3;min-height:40px;">{{ q.title }}</h3>
+
+                  <div style="margin-top:14px;height:130px;border-radius:11px;border:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.015);padding:12px;overflow:hidden;">
+                    <sc-if value="{{ q.isLine }}" hint-placeholder-val="{{ true }}">
+                      <svg viewBox="0 0 300 106" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible;">
+                        <defs><linearGradient id="qg-{{ q.id }}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22d3ee" stop-opacity="0.3"></stop><stop offset="100%" stop-color="#22d3ee" stop-opacity="0"></stop></linearGradient></defs>
+                        <path d="{{ q.area }}" fill="url(#qg-{{ q.id }})"></path>
+                        <path data-draw d="{{ q.line }}" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                      </svg>
+                    </sc-if>
+                    <sc-if value="{{ q.isBars }}" hint-placeholder-val="{{ false }}">
+                      <svg viewBox="0 0 300 106" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">
+                        <sc-for list="{{ q.bars }}" as="b" hint-placeholder-count="8">
+                          <rect data-grow x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="{{ b.h }}" rx="2" fill="{{ b.fill }}"></rect>
+                        </sc-for>
+                      </svg>
+                    </sc-if>
+                    <sc-if value="{{ q.isScatter }}" hint-placeholder-val="{{ false }}">
+                      <svg viewBox="0 0 300 106" style="width:100%;height:100%;display:block;overflow:visible;">
+                        <sc-for list="{{ q.dots }}" as="p" hint-placeholder-count="20">
+                          <circle data-pop cx="{{ p.cx }}" cy="{{ p.cy }}" r="{{ p.r }}" fill="#a855f7" fill-opacity="0.55"></circle>
+                        </sc-for>
+                      </svg>
+                    </sc-if>
+                  </div>
+
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                      <sc-for list="{{ q.domainChips }}" as="d" hint-placeholder-count="2">
+                        <span style="font-size:9.5px;font-weight:500;padding:3px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;color:{{ d.color }};background:{{ d.bg }};">{{ d.label }}</span>
+                      </sc-for>
+                    </div>
+                    <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#86efc2;white-space:nowrap;">n = {{ q.n }}</span>
+                  </div>
+                </button>
+              </sc-for>
+            </section>
+
+            <sc-if value="{{ queryModalOpen }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div onClick="{{ closeQuery }}" style="position:fixed;inset:0;z-index:60;background:rgba(2,4,8,0.66);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:aegis-fade-in 0.25s ease;display:grid;place-items:center;padding:30px;">
+                <div onClick="{{ stop }}" role="dialog" aria-label="Query detail" style="width:820px;max-width:100%;max-height:90vh;display:flex;flex-direction:column;border-radius:20px;border:1px solid rgba(34,211,238,0.2);background:linear-gradient(195deg, rgba(15,19,28,0.98), rgba(10,13,20,0.98));backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);box-shadow:0 40px 90px rgba(0,0,0,0.6);overflow:hidden;animation:aegis-drawer-in 0.34s cubic-bezier(0.22,1,0.36,1);">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 26px 18px;border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <div>
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#22d3ee;">{{ queryModal.id }}</span>
+                        <span style="font-size:9px;font-weight:600;padding:3px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;color:{{ queryModal.badgeColor }};background:{{ queryModal.badgeBg }};">{{ queryModal.badge }}</span>
+                        <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#86efc2;">n = {{ queryModal.n }}</span>
+                      </div>
+                      <h2 style="margin:9px 0 0;font-size:18px;font-weight:600;">{{ queryModal.title }}</h2>
+                    </div>
+                    <button onClick="{{ closeQuery }}" style="width:34px;height:34px;flex:none;border-radius:9px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:#9aa7b8;cursor:pointer;font-size:16px;" style-hover="color:#e8edf4;border-color:rgba(255,255,255,0.25);">✕</button>
+                  </div>
+                  <div style="flex:1;min-height:0;overflow-y:auto;padding:22px 26px 26px;">
+                    <div style="display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap;">
+                      <div style="position:relative;"><select style="appearance:none;-webkit-appearance:none;padding:7px 28px 7px 12px;border-radius:9px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#e8edf4;font-family:inherit;font-size:11.5px;cursor:pointer;"><option style="background:#0e121b;">Last 12 weeks</option><option style="background:#0e121b;">This term</option></select><span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#8593a5;font-size:8px;">▼</span></div>
+                      <div style="position:relative;"><select style="appearance:none;-webkit-appearance:none;padding:7px 28px 7px 12px;border-radius:9px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#e8edf4;font-family:inherit;font-size:11.5px;cursor:pointer;"><option style="background:#0e121b;">All cohorts</option><option style="background:#0e121b;">Year 1</option><option style="background:#0e121b;">Year 2</option></select><span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#8593a5;font-size:8px;">▼</span></div>
+                      <label style="display:flex;align-items:center;gap:9px;padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#9aa7b8;">binning<input type="range" min="6" max="24" value="12" style="width:90px;accent-color:#22d3ee;" /></label>
+                      <div style="flex:1;"></div>
+                      <button style="display:flex;align-items:center;gap:8px;padding:7px 15px;border-radius:9px;border:1px solid rgba(34,211,238,0.32);background:rgba(34,211,238,0.1);color:#22d3ee;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;" style-hover="background:rgba(34,211,238,0.2);">↓ Export CSV</button>
+                    </div>
+
+                    <div style="height:300px;border-radius:13px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.015);padding:18px;">
+                      <sc-if value="{{ queryModal.isLine }}" hint-placeholder-val="{{ true }}">
+                        <svg viewBox="0 0 300 106" preserveAspectRatio="none" style="width:100%;height:100%;display:block;overflow:visible;">
+                          <path d="{{ queryModal.area }}" fill="url(#qg-{{ queryModal.id }})"></path>
+                          <path data-draw d="{{ queryModal.line }}" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                      </sc-if>
+                      <sc-if value="{{ queryModal.isBars }}" hint-placeholder-val="{{ false }}">
+                        <svg viewBox="0 0 300 106" preserveAspectRatio="none" style="width:100%;height:100%;display:block;">
+                          <sc-for list="{{ queryModal.bars }}" as="b" hint-placeholder-count="8"><rect data-grow x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="{{ b.h }}" rx="2" fill="{{ b.fill }}"></rect></sc-for>
+                        </svg>
+                      </sc-if>
+                      <sc-if value="{{ queryModal.isScatter }}" hint-placeholder-val="{{ false }}">
+                        <svg viewBox="0 0 300 106" style="width:100%;height:100%;display:block;overflow:visible;">
+                          <sc-for list="{{ queryModal.dots }}" as="p" hint-placeholder-count="20"><circle data-pop cx="{{ p.cx }}" cy="{{ p.cy }}" r="{{ p.r }}" fill="#a855f7" fill-opacity="0.55"></circle></sc-for>
+                        </svg>
+                      </sc-if>
+                    </div>
+
+                    <div style="margin-top:18px;font-size:9.5px;font-weight:600;letter-spacing:0.14em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">TRANSFORMATION PROVENANCE</div>
+                    <pre style="margin:9px 0 0;padding:15px 17px;border-radius:11px;border:1px solid rgba(168,85,247,0.18);background:rgba(168,85,247,0.05);font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;color:#cbb6e8;white-space:pre-wrap;overflow-x:auto;">{{ queryModal.sql }}</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+          </div>
+          </sc-if>
+
+          <!-- ============ SECURITY & AUDIT ============ -->
+          <sc-if value="{{ isSecurity }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Security">
+            <section data-anim="region" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
+              <sc-for list="{{ secVitals }}" as="k" hint-placeholder-count="4">
+                <div data-anim="rise" style="position:relative;padding:17px 18px;border-radius:15px;border:1px solid {{ k.edge }};background:linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:10.5px;color:#8593a5;font-weight:500;">{{ k.label }}</span>
+                    <span style="width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:13px;color:{{ k.color }};background:{{ k.iconBg }};">{{ k.glyph }}</span>
+                  </div>
+                  <div data-count="{{ k.value }}" data-suffix="{{ k.suffix }}" style="margin-top:13px;font-size:27px;font-weight:600;letter-spacing:-0.02em;font-family:'JetBrains Mono',monospace;color:#f3f7fc;">{{ k.display }}</div>
+                  <div style="margin-top:6px;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:{{ k.color }};">{{ k.note }}</div>
+                </div>
+              </sc-for>
+            </section>
+
+            <section data-anim="region" style="display:grid;grid-template-columns:1.7fr 1fr;gap:18px;margin-bottom:20px;align-items:start;">
+              <div style="border-radius:18px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.07);">
+                  <div style="display:flex;align-items:center;gap:11px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#22d3ee;box-shadow:0 0 10px #22d3ee;animation:aegis-blink 1.5s ease-in-out infinite;"></span>
+                    <div><div style="font-size:9.5px;letter-spacing:0.16em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">IMMUTABLE</div><h3 style="margin:3px 0 0;font-size:15px;font-weight:600;">Audit log stream</h3></div>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <sc-for list="{{ logFilters }}" as="f" hint-placeholder-count="4">
+                      <button onClick="{{ f.pick }}" style="padding:5px 11px;border:1px solid rgba(255,255,255,0.1);border-radius:7px;background:transparent;color:#9aa7b8;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.06em;transition:all 0.16s;{{ f.style }}" style-hover="color:#e8edf4;">{{ f.label }}</button>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:78px 92px 1fr 110px 78px;gap:10px;padding:9px 20px;border-bottom:1px solid rgba(255,255,255,0.06);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;color:#5f6b7d;">
+                  <span>TIME</span><span>ACTION</span><span>RESOURCE</span><span>ACTOR</span><span style="text-align:right;">RESULT</span>
+                </div>
+                <div style="max-height:436px;overflow-y:auto;">
+                  <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="10">
+                    <div data-logrow style="display:grid;grid-template-columns:78px 92px 1fr 110px 78px;gap:10px;align-items:center;padding:10px 20px;border-bottom:1px solid rgba(255,255,255,0.035);font-family:'JetBrains Mono',monospace;font-size:11px;">
+                      <span style="color:#5f6b7d;">{{ l.time }}</span>
+                      <span style="font-weight:600;color:{{ l.actionColor }};">{{ l.action }}</span>
+                      <span style="color:#9aa7b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ l.resource }}</span>
+                      <span style="color:#8593a5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ l.actor }}</span>
+                      <span style="justify-self:end;font-size:9px;font-weight:600;padding:2px 7px;border-radius:5px;color:{{ l.resColor }};background:{{ l.resBg }};">{{ l.result }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:18px;">
+                <div style="padding:19px 20px;border-radius:18px;border:1px solid rgba(52,211,153,0.18);background:linear-gradient(165deg, rgba(52,211,153,0.06), rgba(255,255,255,0.01));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
+                  <div style="font-size:9.5px;letter-spacing:0.16em;color:#86efc2;font-family:'JetBrains Mono',monospace;margin-bottom:14px;">ENCRYPTION &amp; CONTROLS</div>
+                  <div style="display:flex;flex-direction:column;gap:11px;">
+                    <sc-for list="{{ encControls }}" as="c" hint-placeholder-count="4">
+                      <div style="display:flex;align-items:center;gap:12px;">
+                        <span style="width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;font-size:13px;color:{{ c.color }};background:{{ c.iconBg }};">{{ c.glyph }}</span>
+                        <div style="flex:1;min-width:0;">
+                          <div style="display:flex;justify-content:space-between;gap:8px;">
+                            <span style="font-size:12px;color:#cdd6e3;">{{ c.label }}</span>
+                            <span style="font-size:11.5px;font-weight:600;font-family:'JetBrains Mono',monospace;color:{{ c.color }};">{{ c.value }}</span>
+                          </div>
+                          <sc-if value="{{ c.hasBar }}" hint-placeholder-val="{{ false }}">
+                            <div style="margin-top:6px;height:4px;border-radius:2px;background:rgba(255,255,255,0.07);overflow:hidden;"><div data-bar style="height:100%;border-radius:2px;width:{{ c.barPct }};background:linear-gradient(90deg,#22d3ee,#a855f7);"></div></div>
+                          </sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div style="padding:19px 20px;border-radius:18px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
+                  <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#f87171;box-shadow:0 0 8px #f87171;animation:aegis-blink 1.4s ease-in-out infinite;"></span>
+                    <span style="font-size:9.5px;letter-spacing:0.16em;color:#f87171;font-family:'JetBrains Mono',monospace;">ANOMALY FLAGS · {{ anomalyCount }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:9px;">
+                    <sc-for list="{{ anomalies }}" as="a" hint-placeholder-count="3">
+                      <div style="padding:11px 13px;border-radius:11px;border-left:3px solid {{ a.color }};border-top:1px solid rgba(255,255,255,0.05);border-right:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                          <span style="font-size:12.5px;font-weight:600;color:#f3f7fc;">{{ a.title }}</span>
+                          <span style="font-size:8.5px;font-weight:700;letter-spacing:0.06em;padding:2px 7px;border-radius:5px;font-family:'JetBrains Mono',monospace;color:{{ a.color }};background:{{ a.bg }};">{{ a.sev }}</span>
+                        </div>
+                        <div style="margin-top:5px;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#8593a5;line-height:1.5;">{{ a.detail }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section data-anim="region">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;">
+                <div><div style="font-size:9.5px;letter-spacing:0.18em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">COMPLIANCE POSTURE</div><h3 style="margin:5px 0 0;font-size:16px;font-weight:600;">GDPR &amp; ISO 27001 controls</h3></div>
+                <span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#86efc2;">{{ complPass }} / {{ complTotal }} passing</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:13px;">
+                <sc-for list="{{ compliance }}" as="c" hint-placeholder-count="6">
+                  <div data-anim="rise" style="padding:15px 16px;border-radius:14px;border:1px solid {{ c.edge }};background:linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                      <span style="font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#22d3ee;letter-spacing:0.04em;">{{ c.ref }}</span>
+                      <span style="display:flex;align-items:center;gap:5px;font-size:9px;font-weight:600;padding:3px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;color:{{ c.color }};background:{{ c.bg }};"><span style="width:5px;height:5px;border-radius:50%;background:{{ c.color }};"></span>{{ c.statusLabel }}</span>
+                    </div>
+                    <div style="margin-top:9px;font-size:13px;font-weight:600;color:#e8edf4;">{{ c.title }}</div>
+                    <div style="margin-top:6px;font-size:11px;color:#8593a5;line-height:1.5;">{{ c.note }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </div>
+          </sc-if>
+
+          <!-- ============ CONSENT & PRIVACY ============ -->
+          <sc-if value="{{ isConsent }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Consent">
+
+            <sc-if value="{{ consentDenied }}" hint-placeholder-val="{{ false }}">
+              <section data-anim="region" style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding:70px 24px;max-width:520px;margin:40px auto 0;border-radius:20px;border:1px solid rgba(248,113,113,0.2);background:linear-gradient(165deg, rgba(248,113,113,0.05), rgba(255,255,255,0.01));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
+                <span style="width:62px;height:62px;border-radius:17px;display:grid;place-items:center;font-size:26px;color:#f87171;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.25);">⊘</span>
+                <div>
+                  <h2 style="margin:0;font-size:20px;font-weight:600;">Access restricted</h2>
+                  <p style="margin:10px 0 0;font-size:13.5px;color:#9aa7b8;line-height:1.6;">The <strong style="color:#e8edf4;">Analyst</strong> role works with aggregates only. Individual consent records, retention timers and subject requests require <strong style="color:#22d3ee;">Data subject</strong> or <strong style="color:#22d3ee;">Auditor</strong> scope.</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-size:11px;font-family:'JetBrains Mono',monospace;color:#8593a5;">⛨ this access attempt was logged · audit.stream</div>
+              </section>
+            </sc-if>
+
+            <sc-if value="{{ consentAllowed }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <section data-anim="region" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 18px;margin-bottom:20px;border-radius:16px;border:1px solid rgba(255,255,255,0.09);background:linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.012));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);">
+                <div>
+                  <div style="font-size:9.5px;letter-spacing:0.16em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;margin-bottom:8px;">DATA SUBJECT · PSEUDONYMOUS</div>
+                  <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                    <sc-for list="{{ subjects }}" as="s" hint-placeholder-count="4">
+                      <button onClick="{{ s.pick }}" style="display:flex;align-items:center;gap:8px;padding:8px 13px;border-radius:10px;border:1px solid {{ s.edge }};background:{{ s.bg }};color:{{ s.color }};cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;transition:all 0.18s;" style-hover="border-color:rgba(34,211,238,0.4);">
+                        <span style="width:7px;height:7px;border-radius:50%;background:{{ s.dot }};"></span>{{ s.id }}
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="flex:1;"></div>
+                <div style="display:flex;align-items:center;gap:11px;padding:11px 15px;border-radius:12px;background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.2);">
+                  <span style="width:30px;height:30px;border-radius:9px;background:rgba(52,211,153,0.14);display:grid;place-items:center;color:#34d399;font-size:13px;">#</span>
+                  <div><div style="font-size:12px;font-weight:600;color:#86efc2;">Pseudonymisation active</div><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#5f7a6e;margin-top:2px;">salted SHA-256 · re-id key vaulted</div></div>
+                </div>
+              </section>
+
+              <section data-anim="region" style="display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:start;">
+                <div style="border-radius:18px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden;">
+                  <div style="padding:17px 22px;border-bottom:1px solid rgba(255,255,255,0.07);"><div style="font-size:9.5px;letter-spacing:0.16em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">CONSENT SCOPES · {{ subjectActive }}</div><h3 style="margin:5px 0 0;font-size:15px;font-weight:600;">Data categories &amp; lawful basis</h3></div>
+                  <div>
+                    <sc-for list="{{ scopes }}" as="s" hint-placeholder-count="6">
+                      <div data-row style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,0.045);">
+                        <div style="min-width:0;">
+                          <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="width:9px;height:9px;border-radius:3px;flex:none;background:{{ s.dot }};box-shadow:0 0 8px {{ s.glow }};"></span>
+                            <span style="font-size:14px;font-weight:600;">{{ s.cat }}</span>
+                            <span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:5px;font-family:'JetBrains Mono',monospace;color:{{ s.statusColor }};background:{{ s.statusBg }};">{{ s.statusLabel }}</span>
+                          </div>
+                          <div style="margin-top:7px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                            <span style="font-size:10.5px;font-family:'JetBrains Mono',monospace;color:#8593a5;">{{ s.basis }}</span>
+                            <span style="display:flex;align-items:center;gap:7px;font-size:10.5px;font-family:'JetBrains Mono',monospace;color:{{ s.retColor }};">⌛ {{ s.retLabel }}</span>
+                          </div>
+                          <div style="margin-top:8px;height:4px;width:230px;max-width:100%;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden;"><div data-bar style="height:100%;border-radius:2px;width:{{ s.retPct }};background:{{ s.retBar }};"></div></div>
+                        </div>
+                        <button onClick="{{ s.toggle }}" role="switch" aria-checked="{{ s.granted }}" style="position:relative;width:48px;height:27px;flex:none;border-radius:14px;border:1px solid {{ s.trackEdge }};background:{{ s.track }};cursor:pointer;transition:background 0.22s,border-color 0.22s;padding:0;">
+                          <span style="position:absolute;top:2px;left:{{ s.knobX }};width:21px;height:21px;border-radius:50%;background:{{ s.knob }};box-shadow:0 2px 6px rgba(0,0,0,0.4);transition:left 0.22s cubic-bezier(0.22,1,0.36,1);"></span>
+                        </button>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:18px;">
+                  <div style="padding:19px 20px;border-radius:18px;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:9.5px;letter-spacing:0.16em;color:#5f6b7d;font-family:'JetBrains Mono',monospace;">SUBJECT REQUESTS</div><span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#8593a5;">Art.20 · Art.17</span></div>
+                    <div style="display:flex;flex-direction:column;gap:9px;">
+                      <sc-for list="{{ requests }}" as="r" hint-placeholder-count="4">
+                        <div style="padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);">
+                          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                            <span style="display:flex;align-items:center;gap:8px;"><span style="width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:11px;color:{{ r.color }};background:{{ r.bg }};">{{ r.glyph }}</span><span style="font-size:12.5px;font-weight:600;">{{ r.typeLabel }}</span></span>
+                            <span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:5px;font-family:'JetBrains Mono',monospace;color:{{ r.statusColor }};background:{{ r.statusBg }};">{{ r.status }}</span>
+                          </div>
+                          <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;font-size:10px;font-family:'JetBrains Mono',monospace;color:#8593a5;">
+                            <span>{{ r.id }} · {{ r.subject }}</span>
+                            <span>SLA {{ r.sla }}</span>
+                          </div>
+                          <button onClick="{{ goSecurity }}" style="margin-top:9px;font-size:10px;color:#22d3ee;background:transparent;border:none;cursor:pointer;font-family:'JetBrains Mono',monospace;padding:0;" style-hover="text-decoration:underline;">→ view audit entry</button>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+
+                  <div style="padding:19px 20px;border-radius:18px;border:1px solid rgba(34,211,238,0.16);background:linear-gradient(165deg, rgba(34,211,238,0.05), rgba(255,255,255,0.01));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);">
+                    <div style="font-size:9.5px;letter-spacing:0.16em;color:#22d3ee;font-family:'JetBrains Mono',monospace;margin-bottom:13px;">RETENTION SUMMARY</div>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;"><span style="color:#cdd6e3;">Next auto-deletion</span><span style="font-family:'JetBrains Mono',monospace;color:#fbbf24;">{{ nextDelete }}</span></div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;"><span style="color:#cdd6e3;">Records held</span><span style="font-family:'JetBrains Mono',monospace;color:#e8edf4;">{{ recordsHeld }}</span></div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;"><span style="color:#cdd6e3;">Active consents</span><span style="font-family:'JetBrains Mono',monospace;color:#86efc2;">{{ activeConsents }}</span></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+            </sc-if>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ toastOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed;bottom:54px;left:50%;transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:11px;padding:13px 18px;border-radius:13px;border:1px solid {{ toastEdge }};background:rgba(14,18,27,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 18px 44px rgba(0,0,0,0.5);animation:aegis-toast-in 0.34s cubic-bezier(0.22,1,0.36,1);">
+              <span style="width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12px;color:{{ toastColor }};background:{{ toastBg }};">{{ toastGlyph }}</span>
+              <div><div style="font-size:12.5px;font-weight:600;color:#e8edf4;">{{ toastMsg }}</div><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#5f6b7d;margin-top:2px;">⛨ written to audit.stream</div></div>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+
+      <footer style="position:sticky;bottom:0;z-index:20;display:flex;align-items:center;gap:18px;padding:9px 26px;border-top:1px solid rgba(255,255,255,0.07);background:linear-gradient(0deg, rgba(8,11,17,0.9), rgba(8,11,17,0.6));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8593a5;">
+        <span style="display:flex;align-items:center;gap:7px;color:#86efc2;"><span style="width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 7px #34d399;"></span>ALL SYSTEMS NOMINAL</span>
+        <span style="width:1px;height:12px;background:rgba(255,255,255,0.12);"></span>
+        <span>region eu-central-1</span>
+        <span style="width:1px;height:12px;background:rgba(255,255,255,0.12);"></span>
+        <span>GDPR · ISO 27001</span>
+        <div style="flex:1;"></div>
+        <span style="display:flex;align-items:center;gap:7px;"><span style="width:6px;height:6px;border-radius:50%;background:#22d3ee;box-shadow:0 0 7px #22d3ee;animation:aegis-blink 1.6s ease-in-out infinite;"></span>LIVE · synced {{ syncedAt }}</span>
+      </footer>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = {
+      page: 'overview',
+      role: 'engineer',
+      density: 'comfortable',
+      navCollapsed: false,
+      roleMenuOpen: false,
+      runOutcome: 'all',
+      runSource: 'all',
+      runQuery: '',
+      runSortKey: 'id',
+      runSortDir: 'desc',
+      runPage: 0,
+      drawerRunId: null,
+      sourceId: null,
+      analyticsTab: 'All',
+      queryId: null,
+      logFilter: 'ALL',
+      liveLog: [],
+      subjectId: 'subj_7c4e',
+      consent: { 'Sleep':true, 'Heart rate':true, 'Activity':true, 'Meals':false, 'Grades':true, 'Attendance':true },
+      toast: null,
+    };
+    this.RUNS_PER_PAGE = 9;
+    this.rootRef = (el)=>{ this.root = el; };
+    this.scrollRef = (el)=>{ this.scrollEl = el; };
+    this._buildData();
+  }
+
+  _buildData(){
+    this.ROLES = [
+      { id:'engineer', label:'Data engineer', initial:'DE', scope:'Runs, ingest health, quarantine', tint:'linear-gradient(150deg,#22d3ee,#3b82f6)' },
+      { id:'analyst', label:'Analyst', initial:'AN', scope:'Aggregate analytics only', tint:'linear-gradient(150deg,#a855f7,#ec4899)' },
+      { id:'subject', label:'Data subject', initial:'DS', scope:'Own data, consent, export/erasure', tint:'linear-gradient(150deg,#34d399,#22d3ee)' },
+      { id:'auditor', label:'Auditor', initial:'AU', scope:'Audit log, anomalies, compliance', tint:'linear-gradient(150deg,#fbbf24,#f87171)' },
+    ];
+
+    this.STAGES = [
+      { name:'Ingest', icon:'⬇', note:'TLS 1.3', tp:'2,840', status:'active' },
+      { name:'Validate', icon:'✓', note:'schema checks', tp:'2,838', status:'active' },
+      { name:'Clean', icon:'≈', note:'dedup · impute', tp:'2,791', status:'active' },
+      { name:'Normalize', icon:'⇄', note:'unit harmonise', tp:'2,791', status:'ok' },
+      { name:'Pseudonymize', icon:'#', note:'salted SHA-256', tp:'2,789', status:'active' },
+      { name:'Encrypt', icon:'⚿', note:'AES-256-GCM', tp:'2,789', status:'ok' },
+      { name:'Store', icon:'▢', note:'at rest · RBAC', tp:'2,789', status:'ok' },
+      { name:'Retain', icon:'⌛', note:'auto-erasure', tp:'41', status:'idle' },
+    ];
+
+    const sources = ['Wearables API','LMS / grades','Attendance','Sleep tracker','Meals log','UCI · student-perf','UCI · sleep-study'];
+    const outcomes = ['success','success','success','quarantine','success','failed','success','quarantine','success','success'];
+    this.RUNS = [];
+    for(let i=0;i<28;i++){
+      const oc = outcomes[i % outcomes.length];
+      const src = sources[i % sources.length];
+      const inn = 4200 - i*87 + (i%5)*120;
+      const q = oc==='quarantine' ? 12 + (i%9)*7 : (oc==='failed' ? 0 : (i%4));
+      const out = oc==='failed' ? 0 : inn - q - (i%6);
+      this.RUNS.push({
+        id:'run_'+String(9241-i).padStart(4,'0'),
+        source:src,
+        rowsIn:inn, rowsOut:out, quarantined:q,
+        transforms: 6 + (i%4),
+        duration: (1.2 + (i%7)*0.46).toFixed(2)+'s',
+        outcome: oc,
+        ago: i===0?'just now':(i*7)+'m ago',
+      });
+    }
+
+    this.SOURCES = [
+      { name:'Wearables API', type:'STREAM', health:'healthy', fresh:'12s ago', lag:'0.4s', sla:'within SLA', missing:'0.3%', dedup:'99.7%', harmon:'100%', spark:[42,48,40,52,60,55,64,70,66,72] },
+      { name:'LMS / grades', type:'BATCH', health:'healthy', fresh:'4m ago', lag:'—', sla:'within SLA', missing:'1.1%', dedup:'100%', harmon:'98%', spark:[30,32,28,35,40,38,42,44,41,46] },
+      { name:'Attendance', type:'BATCH', health:'degraded', fresh:'38m ago', lag:'8m', sla:'at risk', missing:'4.7%', dedup:'99.1%', harmon:'94%', spark:[50,48,52,40,38,30,28,32,26,24] },
+      { name:'Sleep tracker', type:'STREAM', health:'healthy', fresh:'21s ago', lag:'0.9s', sla:'within SLA', missing:'0.8%', dedup:'99.9%', harmon:'100%', spark:[20,26,30,28,34,40,44,50,54,60] },
+      { name:'Meals log', type:'STREAM', health:'drift', fresh:'2m ago', lag:'1.2s', sla:'schema drift', missing:'6.2%', dedup:'97.4%', harmon:'71%', spark:[60,58,55,50,44,30,52,28,40,22] },
+      { name:'UCI · student-perf', type:'DATASET', health:'healthy', fresh:'static', lag:'—', sla:'reference', missing:'0%', dedup:'100%', harmon:'100%', spark:[40,40,41,40,42,41,40,41,42,41] },
+      { name:'UCI · sleep-study', type:'DATASET', health:'healthy', fresh:'static', lag:'—', sla:'reference', missing:'0%', dedup:'100%', harmon:'100%', spark:[38,39,38,40,39,40,39,40,40,39] },
+    ];
+
+    this.QUERIES = [
+      { id:'Q1', title:'Sleep duration vs. exam performance', type:'scatter', n:418, domains:['Health','Academic'], synthetic:false,
+        sql:'SELECT bucket(sleep_hrs, 0.5) AS sleep,\n       avg(exam_pct) AS score\nFROM health.sleep h\nJOIN academic.grades g USING (subject_hash)\nGROUP BY sleep\nHAVING count(*) >= 40;  -- k-anon' },
+      { id:'Q2', title:'Weekly activity minutes — cohort trend', type:'line', n:512, domains:['Health','Teammate'], synthetic:false,
+        sql:'SELECT week, avg(active_min) AS activity\nFROM health.activity\nGROUP BY week\nHAVING count(distinct subject_hash) >= 40\nORDER BY week;' },
+      { id:'Q3', title:'Attendance distribution by faculty', type:'hist', n:1240, domains:['Academic'], synthetic:false,
+        sql:'SELECT bucket(attendance_rate, 5) AS band,\n       count(*) AS students\nFROM academic.attendance\nGROUP BY band\nORDER BY band;' },
+      { id:'Q4', title:'Resting HR vs. self-reported stress', type:'scatter', n:386, domains:['Health'], synthetic:false,
+        sql:'SELECT bucket(resting_hr, 4) AS hr,\n       avg(stress_score) AS stress\nFROM health.vitals\nGROUP BY hr\nHAVING count(*) >= 40;' },
+      { id:'Q5', title:'Meal regularity → grade band', type:'bar', n:402, domains:['Health','Academic'], synthetic:false,
+        sql:'SELECT regularity_band,\n       avg(grade_pct) AS grade\nFROM health.meals m\nJOIN academic.grades g USING (subject_hash)\nGROUP BY regularity_band;' },
+      { id:'Q6', title:'Synthetic cohort — generated profiles', type:'bar', n:1000, domains:['Synthetic'], synthetic:true,
+        sql:'-- DEMO ONLY: generated, not real subjects\nSELECT profile_band, count(*)\nFROM synthetic.cohort_v3\nGROUP BY profile_band;' },
+    ];
+
+    const acts = ['READ','WRITE','QUERY','DENY','EXPORT','ERASURE','READ','QUERY','READ','WRITE'];
+    const res = ['health.sleep','academic.grades','consent.scopes','vault.keys','export.bundle','subject.erase','pipeline.runs','analytics.q2','attendance.raw','audit.stream'];
+    this.AUDIT = [];
+    for(let i=0;i<22;i++){
+      const a = acts[i%acts.length];
+      this.AUDIT.push({
+        time: this._clock(i*23),
+        action: a,
+        resource: res[i%res.length],
+        actor: (i%3===0?'svc_':'usr_')+ (1000+ (i*37)%8999).toString(36),
+        result: a==='DENY' ? 'denied' : (a==='ERASURE'?'queued':'allowed'),
+      });
+    }
+
+    this.ANOMALIES = [
+      { sev:'high', title:'Off-hours bulk read', detail:'usr_4f2a read 12,400 rows · 03:14 local' },
+      { sev:'med', title:'Repeated denied access', detail:'svc_a19 · 7 DENY events in 4 min on vault.keys' },
+      { sev:'low', title:'Export volume spike', detail:'export.bundle 3.2× weekly median' },
+    ];
+
+    this.COMPLIANCE = [
+      { ref:'GDPR Art.32', title:'Security of processing', status:'pass', note:'AES-256-GCM at rest, TLS 1.3 in transit' },
+      { ref:'GDPR Art.25', title:'Privacy by design', status:'pass', note:'pseudonymisation enforced pre-store' },
+      { ref:'GDPR Art.5', title:'Data minimisation', status:'attention', note:'meals_log retains 2 unused fields' },
+      { ref:'GDPR Art.17', title:'Right to erasure', status:'pass', note:'auto-erasure jobs on schedule' },
+      { ref:'ISO A.9', title:'Access control', status:'pass', note:'RBAC + least privilege verified' },
+      { ref:'ISO A.12', title:'Operations security', status:'attention', note:'1 patch pending on ingest-02' },
+    ];
+
+    this.SCOPES = [
+      { cat:'Sleep', granted:true, basis:'Consent (Art.6(1)(a))', days:540 },
+      { cat:'Heart rate', granted:true, basis:'Consent (Art.6(1)(a))', days:540 },
+      { cat:'Activity', granted:true, basis:'Consent (Art.6(1)(a))', days:540 },
+      { cat:'Meals', granted:false, basis:'Consent (Art.6(1)(a))', days:0 },
+      { cat:'Grades', granted:true, basis:'Public task (Art.6(1)(e))', days:1825 },
+      { cat:'Attendance', granted:true, basis:'Public task (Art.6(1)(e))', days:1825 },
+    ];
+
+    this.REQUESTS = [
+      { id:'dsr_0481', type:'export', status:'completed', sla:'2/30 days', subject:'subj_7c4e' },
+      { id:'dsr_0479', type:'erasure', status:'pending', sla:'5/30 days', subject:'subj_a912' },
+      { id:'dsr_0472', type:'export', status:'pending', sla:'11/30 days', subject:'subj_3f08' },
+      { id:'dsr_0468', type:'erasure', status:'completed', sla:'8/30 days', subject:'subj_e651' },
+    ];
+
+    this.SUBJECTS = ['subj_7c4e','subj_a912','subj_3f08','subj_e651'];
+
+    this._logActs=['READ','WRITE','QUERY','DENY','EXPORT','ERASURE'];
+    this._logRes=['health.sleep','academic.grades','consent.scopes','vault.keys','export.bundle','subject.erase','pipeline.runs','analytics.q2','attendance.raw','audit.stream','health.vitals','meals.log'];
+    this._logNow = 14*3600 + 23*60 + 5;
+    this._logUid = 0;
+    this._logR = this._rng(20260613);
+    this.state.liveLog = [];
+    for(let i=0;i<14;i++) this.state.liveLog.unshift(this._genLog());
+  }
+  _fmtClock(tot){ tot=((tot%86400)+86400)%86400; const p=(n)=>String(n).padStart(2,'0'); return p(Math.floor(tot/3600))+':'+p(Math.floor((tot%3600)/60))+':'+p(tot%60); }
+  _genLog(){
+    const r=this._logR; const a=this._logActs[Math.floor(r()*this._logActs.length)];
+    this._logNow += 1+Math.floor(r()*4);
+    const res = a==='DENY'?'vault.keys':(a==='EXPORT'?'export.bundle':(a==='ERASURE'?'subject.erase':this._logRes[Math.floor(r()*this._logRes.length)]));
+    const actor=(r()<0.34?'svc_':'usr_')+(1000+Math.floor(r()*8999)).toString(36);
+    const result = a==='DENY'?'denied':(a==='ERASURE'?'queued':(a==='EXPORT'?'sealed':'allowed'));
+    return { uid:++this._logUid, time:this._fmtClock(this._logNow), action:a, resource:res, actor:actor, result:result };
+  }
+
+  _clock(secAgo){
+    const base = 14*3600 + 23*60 + 5;
+    let t = base - secAgo; if(t<0) t+=86400;
+    const h=Math.floor(t/3600), m=Math.floor((t%3600)/60), s=t%60;
+    const p=(n)=>String(n).padStart(2,'0');
+    return p(h)+':'+p(m)+':'+p(s);
+  }
+
+  // ---------- motion ----------
+  componentDidMount(){
+    this._reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this._waitGsap(()=> this._initMotion());
+    this._syncLogTimer();
+  }
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.page !== this.state.page){
+      if(this.scrollEl) this.scrollEl.scrollTop = 0;
+      this._waitGsap(()=> this._initMotion());
+      this._syncLogTimer();
+    }
+    if(this.state.page==='security' && !this._reduced && window.gsap){
+      const top=this.state.liveLog[0];
+      if(top && top.uid!==this._lastLogUid && this.root){
+        this._lastLogUid=top.uid;
+        const el=this.root.querySelector('[data-logrow]');
+        if(el && prevState.liveLog && prevState.liveLog[0] && prevState.liveLog[0].uid!==top.uid){
+          window.gsap.from(el,{ y:-9, autoAlpha:0, duration:0.45, ease:'power2.out', clearProps:'all' });
+        }
+      }
+    }
+  }
+  _syncLogTimer(){
+    const live = this.state.page==='security';
+    if(live && !this._logTimer){
+      this._logTimer = setInterval(()=>{
+        if(document.hidden) return;
+        this.setState(s=>({ liveLog:[this._genLog(), ...s.liveLog].slice(0,80) }));
+      }, 2600);
+    } else if(!live && this._logTimer){
+      clearInterval(this._logTimer); this._logTimer=null;
+    }
+  }
+  _waitGsap(cb, tries){
+    tries = tries||0;
+    if(window.gsap){ cb(); return; }
+    if(tries>60) return;
+    setTimeout(()=> this._waitGsap(cb, tries+1), 50);
+  }
+  _initMotion(){
+    const g = window.gsap; if(!g || !this.root) return;
+    if(this._ctx) this._ctx.revert();
+    const reduced = this._reduced;
+    this._ctx = g.context((self)=>{
+      // entrance
+      const regions = self.selector('[data-anim="region"]');
+      if(!reduced && regions.length){
+        g.from(regions, { autoAlpha:0, y:26, duration:0.7, ease:'power3.out', stagger:0.09 });
+      }
+      const rises = self.selector('[data-anim="rise"]');
+      if(!reduced && rises.length){
+        g.from(rises, { autoAlpha:0, y:18, duration:0.6, ease:'expo.out', stagger:0.05, delay:0.05 });
+      }
+      const rows = self.selector('[data-row]');
+      if(!reduced && rows.length){
+        g.from(rows, { autoAlpha:0, x:-12, duration:0.5, ease:'power2.out', stagger:0.035, delay:0.15 });
+      }
+      // count up
+      self.selector('[data-count]').forEach((el)=>{
+        const raw = el.getAttribute('data-count');
+        const target = parseFloat(String(raw).replace(/[^0-9.\\-]/g,''));
+        if(isNaN(target)) return;
+        const suffix = el.getAttribute('data-suffix')||'';
+        const dec = (String(raw).split('.')[1]||'').length;
+        if(reduced){ return; }
+        const o = { v:0 };
+        g.to(o, { v:target, duration:1.3, ease:'power2.out', onUpdate:()=>{
+          el.textContent = o.v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}) + suffix;
+        }});
+      });
+      // bars
+      self.selector('[data-bar]').forEach((el)=>{
+        if(reduced) return;
+        g.from(el, { scaleX:0, transformOrigin:'left center', duration:0.9, ease:'power3.out', delay:0.2 });
+      });
+      // pipeline pulses
+      if(!reduced){
+        const conns = self.selector('[data-connector]');
+        conns.forEach((c, i)=>{
+          const pulse = c.querySelector('[data-pulse]');
+          if(!pulse) return;
+          const w = c.offsetWidth || 30;
+          g.fromTo(pulse, { x:0, opacity:0 }, { x:w, opacity:1, duration:0.9, ease:'none', repeat:-1, repeatDelay:0.4, delay:i*0.12,
+            onRepeat:()=>{}, keyframes:[{opacity:0,duration:0},{opacity:1,duration:0.15},{opacity:1,duration:0.6},{opacity:0,duration:0.15}] });
+        });
+        // breathing active nodes
+        self.selector('[data-breathe="1"]').forEach((el, i)=>{
+          g.to(el, { scale:1.04, duration:1.6+ (i%3)*0.2, ease:'sine.inOut', repeat:-1, yoyo:true, transformOrigin:'left center' });
+        });
+      }
+      // chart draw-on
+      if(!reduced){
+        self.selector('[data-draw]').forEach((p, i)=>{
+          try{ const len = p.getTotalLength(); p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+            g.to(p, { strokeDashoffset:0, duration:1.4, ease:'power2.inOut', delay:0.25 + i*0.08 }); }catch(e){}
+        });
+        self.selector('[data-grow]').forEach((el, i)=>{
+          g.from(el, { scaleY:0, transformOrigin:'bottom center', duration:0.8, ease:'power3.out', delay:0.3 + i*0.04 });
+        });
+        self.selector('[data-pop]').forEach((el, i)=>{
+          g.from(el, { scale:0, autoAlpha:0, duration:0.5, ease:'back.out(1.8)', delay:0.5 + i*0.02, transformOrigin:'center' });
+        });
+      }
+    }, this.root);
+  }
+  componentWillUnmount(){ if(this._ctx) this._ctx.revert(); if(this._logTimer) clearInterval(this._logTimer); }
+
+  // ---------- helpers ----------
+  _nav(p){ return ()=> this.setState({ page:p, roleMenuOpen:false }); }
+  _toggleConsent(cat){
+    const granted = !this.state.consent[cat];
+    const entry = { uid:++this._logUid, time:this._fmtClock(this._logNow+=2), action:granted?'WRITE':'ERASURE', resource:'consent.scopes', actor:this.state.subjectId, result:granted?'allowed':'queued' };
+    this.setState(s=>({ consent:{...s.consent, [cat]:granted}, liveLog:[entry, ...s.liveLog].slice(0,80),
+      toast:{ msg:(granted?'Consent granted':'Consent revoked')+' · '+cat, kind:granted?'grant':'revoke' } }));
+    if(this._toastTimer) clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(()=> this.setState({toast:null}), 3200);
+  }
+  _statusColor(s){
+    return ({active:'#22d3ee', ok:'#34d399', idle:'#5f6b7d', healthy:'#34d399', degraded:'#fbbf24', drift:'#f87171',
+      success:'#34d399', quarantine:'#fbbf24', failed:'#f87171', pass:'#34d399', attention:'#fbbf24'})[s] || '#8593a5';
+  }
+  _pill(s, label){
+    const c = this._statusColor(s);
+    return { color:c, background:this._alpha(c,0.13), border:'1px solid '+this._alpha(c,0.3) };
+  }
+  _alpha(hex, a){
+    const m = {'#22d3ee':'34,211,238','#a855f7':'168,85,247','#34d399':'52,211,153','#fbbf24':'251,191,36','#f87171':'248,113,113','#5f6b7d':'95,107,125','#8593a5':'133,147,165','#3b82f6':'59,130,246'};
+    const rgb = m[hex]||'133,147,165';
+    return 'rgba('+rgb+','+a+')';
+  }
+
+  _spark(vals, w, h){
+    const max=Math.max(...vals), min=Math.min(...vals), span=(max-min)||1;
+    const pad=4, n=vals.length;
+    const pts=vals.map((v,i)=>{ const x=(i/(n-1))*w; const y=pad+(1-(v-min)/span)*(h-pad*2); return [x,y]; });
+    const line='M '+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L ');
+    const area=line+' L '+w+' '+h+' L 0 '+h+' Z';
+    return { line, area };
+  }
+  _glyphFor(type){ return ({STREAM:'∿',BATCH:'▤',DATASET:'▦'})[type]||'▤'; }
+  _rng(seed){ let s=seed>>>0||1; return ()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; }; }
+  _chart(q){
+    const W=300,H=106, rnd=this._rng(q.id.charCodeAt(1)*97+q.id.length*13);
+    if(q.type==='line'){
+      const n=18; let v=0.4+rnd()*0.2; const vals=[];
+      for(let i=0;i<n;i++){ v+=(rnd()-0.42)*0.12; v=Math.max(0.08,Math.min(0.95,v)); vals.push(v); }
+      const pts=vals.map((y,i)=>[(i/(n-1))*W, (1-y)*(H-8)+4]);
+      const line='M '+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L ');
+      return { kind:'line', line, area:line+' L '+W+' '+H+' L 0 '+H+' Z' };
+    }
+    if(q.type==='hist'||q.type==='bar'){
+      const n = q.type==='hist'?11:6; const gap=q.type==='hist'?3:14; const bw=(W-gap*(n-1))/n;
+      const bars=[]; for(let i=0;i<n;i++){
+        let t; if(q.type==='hist'){ const c=(i-n/2)/ (n/2.2); t=Math.exp(-c*c*1.6)*(0.8+rnd()*0.25); }
+        else t=0.35+rnd()*0.6;
+        const h=Math.max(4,t*(H-6)); const x=i*(bw+gap); const y=H-h;
+        bars.push({ x:x.toFixed(1), y:y.toFixed(1), w:bw.toFixed(1), h:h.toFixed(1), fill: q.type==='hist'?'#22d3ee':(q.synthetic?'#fbbf24':'#a855f7') });
+      }
+      return { kind:'bars', bars };
+    }
+    // scatter
+    const m=30, dots=[]; const slope=rnd()>0.5?1:-1;
+    for(let i=0;i<m;i++){ const bx=rnd(); const noise=(rnd()-0.5)*0.45; let by=slope>0?bx+noise:(1-bx)+noise; by=Math.max(0.05,Math.min(0.95,by));
+      dots.push({ cx:(bx*(W-12)+6).toFixed(1), cy:((1-by)*(H-12)+6).toFixed(1), r:(2+rnd()*2.4).toFixed(1) }); }
+    return { kind:'scatter', dots };
+  }
+
+  renderVals(){
+    const st = this.state;
+    const role = this.ROLES.find(r=>r.id===st.role) || this.ROLES[0];
+    const collapsed = st.navCollapsed;
+
+    // nav
+    const navItem = (id, name, icon, cnt, cntKind)=>{
+      const active = st.page===id;
+      const cc = cntKind==='warn' ? '#fbbf24' : (cntKind==='live' ? '#22d3ee' : '#8593a5');
+      return {
+        name, icon, go:this._nav(id), count: collapsed? '' : (cnt||''),
+        style: 'width:100%;display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:3px;border-radius:10px;cursor:pointer;text-align:left;font-family:inherit;transition:background 0.18s,border-color 0.18s;'
+          + (active ? 'background:linear-gradient(100deg, rgba(34,211,238,0.14), rgba(34,211,238,0.04));border:1px solid rgba(34,211,238,0.3);color:#e8edf4;box-shadow:inset 0 0 16px rgba(34,211,238,0.07);'
+                    : 'background:transparent;border:1px solid transparent;color:#9aa7b8;'),
+        iconStyle: 'width:18px;height:18px;flex:none;display:grid;place-items:center;font-size:13px;'+(active?'color:#22d3ee;':'color:#8593a5;'),
+        dotStyle: cntKind==='live' ? 'width:6px;height:6px;border-radius:50%;background:#22d3ee;box-shadow:0 0 7px #22d3ee;flex:none;' : 'display:none;',
+        countStyle: collapsed? 'display:none;' : (cnt ? ('color:'+cc+';background:'+this._alpha(cntKind==='warn'?'#fbbf24':(cntKind==='live'?'#22d3ee':'#8593a5'),0.13)+';') : 'display:none;'),
+      };
+    };
+    const navGroups = [
+      { label: collapsed?'OP':'OPERATE', items: [
+        navItem('overview','Overview','◳','live','live'),
+        navItem('runs','Runs','≡','12','warn'),
+        navItem('sources','Sources','▤','7'),
+        navItem('analytics','Analytics','◔'),
+      ]},
+      { label: collapsed?'SEC':'SECURITY', items: [
+        navItem('security','Security & audit','◇','3','warn'),
+      ]},
+      { label: collapsed?'PRV':'PRIVACY', items: [
+        navItem('consent','Consent','⬡'),
+      ]},
+    ];
+
+    // page meta
+    const META = {
+      overview:{eb:'Mission control', t:'Pipeline overview'},
+      runs:{eb:'Operations', t:'Pipeline runs'},
+      sources:{eb:'Ingest', t:'Data sources & quality'},
+      analytics:{eb:'Insights', t:'Analytics results'},
+      security:{eb:'Trust', t:'Security & audit'},
+      consent:{eb:'Privacy', t:'Consent & data rights'},
+    };
+    const meta = META[st.page] || META.overview;
+
+    // role menu
+    const roleList = this.ROLES.map(r=>({
+      label:r.label, initial:r.initial, scope:r.scope, tint:r.tint,
+      pick: ()=> this.setState({ role:r.id, roleMenuOpen:false }),
+      rowStyle: r.id===st.role ? 'background:rgba(34,211,238,0.07);' : '',
+      checkStyle: r.id===st.role ? '' : 'visibility:hidden;',
+    }));
+
+    // ---- overview data ----
+    const VITALS = {
+      engineer: [
+        ['Rows ingested · today','1284502','','+8.4% vs avg','up','active'],
+        ['Active runs','12','','3 streaming','flat','active'],
+        ['Failed · 24h','2','','-1 vs yest','up','warn'],
+        ['Avg stage latency','230','ms','p95 410ms','flat','ok'],
+        ['Quarantined rows','148','','meals drift','down','warn'],
+        ['Encryption coverage','100','%','AES-256','flat','ok'],
+      ],
+      analyst: [
+        ['Cohorts available','9','','aggregate','flat','active'],
+        ['Queries run · today','46','','+12','up','active'],
+        ['Min cohort size','40','','k-anon','flat','ok'],
+        ['Datasets','7','','2 reference','flat','ok'],
+        ['Identifiable fields','0','','pseudonymous','flat','ok'],
+        ['Refresh lag','4','m','batch','flat','ok'],
+      ],
+      subject: [
+        ['Your data categories','6','','5 active','flat','active'],
+        ['Active consents','5','','1 revoked','flat','ok'],
+        ['Open requests','1','','erasure','flat','warn'],
+        ['Next auto-delete','118','d','meals purged','flat','ok'],
+        ['Records held','3842','','pseudonymous','flat','ok'],
+        ['Export ready','1','','Art.20','flat','active'],
+      ],
+      auditor: [
+        ['Audit events · 24h','48210','','immutable','flat','active'],
+        ['Failed access · 24h','7','','denied','up','warn'],
+        ['Open anomalies','3','','1 high','flat','warn'],
+        ['Controls passing','22','/24','2 attention','flat','ok'],
+        ['Key rotation','9','d','scheduled','flat','ok'],
+        ['Encryption coverage','100','%','verified','flat','ok'],
+      ],
+    };
+    const vitals = (VITALS[st.role]||VITALS.engineer).map((v)=>{
+      const c = this._statusColor(v[5]);
+      const up = v[4]==='up', down=v[4]==='down';
+      const tc = up?'#34d399':(down?'#f87171':'#8593a5');
+      return {
+        label:v[0], value:v[1], suffix:v[2]||'',
+        display: Number(v[1]).toLocaleString('en-US') + (v[2]||''),
+        trend:v[3], dotStyle:'background:'+c+';box-shadow:0 0 8px '+c+';',
+        trendStyle:'color:'+tc+';',
+      };
+    });
+
+    const stages = this.STAGES.map((s,i)=>{
+      const c = this._statusColor(s.status);
+      const active = s.status==='active';
+      return {
+        idx:'0'+(i+1), name:s.name, icon:s.icon, note:s.note, throughput:s.tp,
+        statusLabel: s.status==='active'?'LIVE':(s.status==='idle'?'IDLE':'OK'),
+        breathe: active?'1':'0',
+        open: this._nav('runs'),
+        hasConnector: i < this.STAGES.length-1,
+        cardStyle:'border:1px solid '+(active?this._alpha('#22d3ee',0.32):'rgba(255,255,255,0.08)')+';background:'+(active?'linear-gradient(165deg, rgba(34,211,238,0.09), rgba(255,255,255,0.015))':'linear-gradient(165deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))')+';backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);'+(active?'box-shadow:0 0 26px rgba(34,211,238,0.1);':''),
+        pillStyle:'color:'+c+';background:'+this._alpha(c,0.14)+';',
+        iconStyle:'background:'+this._alpha(c,0.13)+';color:'+c+';font-size:14px;',
+      };
+    });
+
+    const recentRuns = this.RUNS.slice(0,6).map(r=>({
+      id:r.id, source:r.source, flow:r.rowsIn.toLocaleString()+' → '+r.rowsOut.toLocaleString(),
+      outcome:r.outcome.toUpperCase(),
+      pillStyle:(()=>{const c=this._statusColor(r.outcome);return 'color:'+c+';background:'+this._alpha(c,0.14)+';border:1px solid '+this._alpha(c,0.28)+';';})(),
+    }));
+
+    const ingestHealth = this.SOURCES.slice(0,5).map(s=>{
+      const c=this._statusColor(s.health);
+      const pct = s.health==='healthy'?92:(s.health==='degraded'?54:38);
+      return { name:s.name, fresh:s.fresh, note:s.missing+' miss', dotStyle:'background:'+c+';box-shadow:0 0 7px '+c+';',
+        barStyle:'width:'+pct+'%;background:linear-gradient(90deg,'+c+','+this._alpha(c,0.5)+');' };
+    });
+
+    const tickerEvents = [
+      { text:'run_9241 completed · 4,200→4,188 rows', kind:'success' },
+      { text:'meals_log schema drift auto-quarantined 22 rows', kind:'warn' },
+      { text:'key rotation scheduled in 9 days', kind:'live' },
+      { text:'subj_a912 erasure request queued', kind:'live' },
+    ].map(e=>({ text:e.text, dotStyle:'background:'+this._statusColor(e.kind==='live'?'active':e.kind)+';' }));
+
+    // ---- runs data ----
+    const segDefs = [['all','All',''],['success','Success','success'],['quarantine','Quarantine','quarantine'],['failed','Failed','failed']];
+    const outcomeSegs = segDefs.map(d=>{
+      const on = st.runOutcome===d[0];
+      const c = d[2]?this._statusColor(d[2]):'#22d3ee';
+      return { label:d[1], pick:()=>this.setState({runOutcome:d[0], runPage:0}),
+        style: on?('background:'+this._alpha(c,0.16)+';color:'+c+';'):'',
+        dotStyle: d[2]?('background:'+this._statusColor(d[2])+';'):'background:#8593a5;' };
+    });
+    const sourceOptions = [{value:'all',label:'All sources'}].concat([...new Set(this.RUNS.map(r=>r.source))].map(s=>({value:s,label:s})));
+    const q = st.runQuery.trim().toLowerCase();
+    let filtered = this.RUNS.filter(r=>
+      (st.runOutcome==='all'||r.outcome===st.runOutcome) &&
+      (st.runSource==='all'||r.source===st.runSource) &&
+      (!q || r.id.toLowerCase().includes(q) || r.source.toLowerCase().includes(q)));
+    const sk = st.runSortKey, dir = st.runSortDir==='asc'?1:-1;
+    const sortVal = (r)=>{
+      if(sk==='id') return parseInt(r.id.replace(/\D/g,''));
+      if(sk==='source'||sk==='outcome') return r[sk];
+      if(sk==='duration') return parseFloat(r.duration);
+      if(sk==='rowsIn') return r.rowsIn;
+      return r[sk];
+    };
+    filtered = filtered.slice().sort((a,b)=>{ const x=sortVal(a),y=sortVal(b); return (x<y?-1:x>y?1:0)*dir; });
+    const total = this.RUNS.length, count = filtered.length;
+    const pages = Math.max(1, Math.ceil(count/this.RUNS_PER_PAGE));
+    const page = Math.min(st.runPage, pages-1);
+    const pageRows = filtered.slice(page*this.RUNS_PER_PAGE, page*this.RUNS_PER_PAGE+this.RUNS_PER_PAGE);
+    const compact = st.density==='compact';
+    const runRows = pageRows.map((r,i)=>{
+      const c=this._statusColor(r.outcome);
+      return { id:r.id, source:r.source, flow:r.rowsIn.toLocaleString()+' → '+r.rowsOut.toLocaleString(),
+        transforms:r.transforms, duration:r.duration, outcome:r.outcome.toUpperCase(), quarantined:r.quarantined||'—',
+        pillStyle:'color:'+c+';background:'+this._alpha(c,0.14)+';border:1px solid '+this._alpha(c,0.28)+';',
+        qStyle: r.quarantined? 'color:#fbbf24;' : 'color:#5f6b7d;',
+        zebra: i%2?'background:rgba(255,255,255,0.012);':'',
+        open: ()=>this.setState({drawerRunId:r.id}) };
+    });
+    const colDefs=[['RUN ID','id','start'],['SOURCE','source','start'],['ROWS IN → OUT','rowsIn','start'],['TRANSFORMS','transforms','center'],['DURATION','duration','center'],['OUTCOME','outcome','start'],['QUARANTINED','quarantined','center']];
+    const runCols = colDefs.map(d=>({ label:d[0], color: sk===d[1]?'#22d3ee':'#5f6b7d',
+      arrow: sk===d[1]?(st.runSortDir==='asc'?'▲':'▼'):'',
+      justify: d[2]==='center'?'justify-self:center;':'',
+      sort: ()=>this.setState(s=>({runSortKey:d[1], runSortDir: s.runSortKey===d[1]&&s.runSortDir==='desc'?'asc':'desc'})) }));
+
+    // drawer
+    const dRun = this.RUNS.find(r=>r.id===st.drawerRunId);
+    let drawerRun=null, drawerStages=[], drawerQuarantine=[];
+    if(dRun){
+      const c=this._statusColor(dRun.outcome);
+      const failed = dRun.outcome==='failed';
+      drawerRun = { id:dRun.id, source:dRun.source, outcome:dRun.outcome.toUpperCase(), quarantined:dRun.quarantined,
+        pillStyle:'color:'+c+';background:'+this._alpha(c,0.14)+';border:1px solid '+this._alpha(c,0.28)+';',
+        meta: dRun.duration+' · '+dRun.transforms+' transforms · '+dRun.ago,
+        lineage: dRun.source+' →\\nstaging.raw →\\nvault.encrypted',
+        errors: failed?'E_SCHEMA at Validate:\\nrequired field absent':'no errors',
+        errColor: failed?'#f87171':'#86efc2',
+        hasQ: dRun.quarantined>0 };
+      let cur = dRun.rowsIn;
+      drawerStages = this.STAGES.map((s,i)=>{
+        const drop = i===1?Math.floor(dRun.quarantined*0.3):(i===2?Math.ceil(dRun.quarantined*0.7):(i>2?0:0));
+        const inn=cur; if(!failed) cur=Math.max(dRun.rowsOut, cur-drop); const out= failed&&i>=1?0:cur;
+        const isFail = failed&&i===1;
+        const col = isFail?'#f87171':(failed&&i>1?'#5f6b7d':(i===2&&dRun.quarantined?'#fbbf24':'#22d3ee'));
+        return { name:s.name, ms:(8+ (i*5)% 40)+'ms', color:col, fill:this._alpha(col,0.25),
+          flow: (failed&&i>1)?'halted':(inn.toLocaleString()+' → '+out.toLocaleString()),
+          transforms: s.note, lineStyle: i===this.STAGES.length-1?'display:none;':'' };
+      });
+      if(dRun.quarantined>0){
+        const seeds=[['meals.calories','"—"','non-numeric in numeric field'],['meals.meal_type','"brunch"','value outside enum {b,l,d,snack}'],['meals.logged_at','"32/13"','unparseable timestamp']];
+        drawerQuarantine = seeds.map((s,i)=>({ id:'row_'+(8800+i*13+ (parseInt(dRun.id.replace(/\\D/g,''))%50)), field:s[0], raw:s[1], reason:s[2] }));
+      }
+    }
+
+    // ---- sources data ----
+    const driftAlerts = [
+      { glyph:'⚠', sev:'HIGH', color:'#f87171', edge:'rgba(248,113,113,0.22)', bg:'rgba(248,113,113,0.06)', iconBg:'rgba(248,113,113,0.14)',
+        title:'Meals log — schema drift', detail:'3 fields renamed (meal_type, kcal→calories); 22 rows auto-quarantined in run_9241.', cta:'View offending run' },
+      { glyph:'◴', sev:'MEDIUM', color:'#fbbf24', edge:'rgba(251,191,36,0.22)', bg:'rgba(251,191,36,0.05)', iconBg:'rgba(251,191,36,0.14)',
+        title:'Attendance — SLA at risk', detail:'Last batch landed 38m late, breaching the 30m freshness target. Lag trending up.', cta:'Inspect source' },
+    ];
+    const chipColor=(v)=>{ const n=parseFloat(v); if(isNaN(n)) return '#86efc2'; if(n>5) return '#f87171'; if(n>2) return '#fbbf24'; return '#86efc2'; };
+    const sourceCards = this.SOURCES.map((s,i)=>{
+      const c=this._statusColor(s.health);
+      const sp=this._spark(s.spark,260,52);
+      const harmonN=parseFloat(s.harmon);
+      return { name:s.name, type:s.type, glyph:this._glyphFor(s.type), gid:'c'+i, color:c, iconBg:this._alpha(c,0.13),
+        edge: s.health==='healthy'?'rgba(255,255,255,0.09)':this._alpha(c,0.3),
+        glow: s.health==='healthy'?'':('box-shadow:0 0 30px '+this._alpha(c,0.1)+';'),
+        sla: s.sla.toUpperCase(), fresh:s.fresh, lag:s.lag, line:sp.line, area:sp.area,
+        chips:[ {val:s.missing,label:'MISSING',color:chipColor(s.missing)}, {val:s.dedup,label:'DEDUP',color:'#86efc2'}, {val:s.harmon,label:'HARMONISED',color: harmonN<90?'#fbbf24':'#86efc2'} ],
+        open:()=>this.setState({sourceId:s.name}) };
+    });
+
+    const dSrc = this.SOURCES.find(s=>s.name===st.sourceId);
+    let srcDrawer=null;
+    if(dSrc){
+      const c=this._statusColor(dSrc.health);
+      const series = ({healthy:[96,95,97,96,98,97,96,97,98,97,96,98,97,98],
+        degraded:[88,86,84,80,78,72,70,68,64,60,58,56,54,52],
+        drift:[95,94,92,88,84,70,82,66,72,58,64,50,55,46],
+        reference:[100,100,100,100,100,100,100,100,100,100,100,100,100,100]})[dSrc.sla==='reference'?'reference':dSrc.health] || [90,90,90,90,90,90,90,90,90,90,90,90,90,90];
+      const big=this._spark(series,480,120);
+      const qStyle=(p)=>{ const n=parseFloat(p); const col = n<80?'#f87171':(n<90?'#fbbf24':'#86efc2'); return {qColor:col,qBg:this._alpha(col==='#86efc2'?'#34d399':(col==='#fbbf24'?'#fbbf24':'#f87171'),0.13)}; };
+      const SCHEMA={
+        'Wearables API':[['hr_bpm','int','99.7%'],['steps','int','99.9%'],['spo2','float','98.1%'],['recorded_at','timestamp','100%']],
+        'LMS / grades':[['student_id','uuid','100%'],['course','string','100%'],['grade','float','98.9%'],['term','string','100%']],
+        'Attendance':[['student_id','uuid','100%'],['session','string','99.1%'],['present','bool','95.3%'],['date','date','100%']],
+        'Sleep tracker':[['sleep_min','int','99.2%'],['deep_min','int','98.4%'],['efficiency','float','99.0%'],['night_of','date','100%']],
+        'Meals log':[['calories','int','82.0%'],['meal_type','enum','71.0%'],['logged_at','timestamp','88.0%'],['portion','float','90.1%']],
+        'UCI · student-perf':[['G1','int','100%'],['G2','int','100%'],['G3','int','100%'],['studytime','int','100%'],['absences','int','100%']],
+        'UCI · sleep-study':[['sr','float','100%'],['sl','int','100%'],['pr','int','100%'],['bo','int','100%']],
+      };
+      const schema=(SCHEMA[dSrc.name]||[]).map(f=>{ const q=qStyle(f[2]); return {name:f[0],type:f[1],quality:f[2],qColor:q.qColor,qBg:q.qBg}; });
+      const isUci=/UCI/.test(dSrc.name);
+      const MAP={
+        'UCI · student-perf':[['G1 … G3 (0–20)','grade_pct (0–100)'],['studytime (1–4)','study_hrs_week'],['absences (count)','attendance_rate (%)']],
+        'UCI · sleep-study':[['sr (snore rate)','hr_proxy'],['sl (sleep level)','sleep_stage'],['pr (pulse rate)','resting_hr_bpm']],
+      };
+      srcDrawer={ name:dSrc.name, type:dSrc.type, glyph:this._glyphFor(dSrc.type), gid:'c'+this.SOURCES.indexOf(dSrc), color:c, iconBg:this._alpha(c,0.13),
+        fresh:dSrc.fresh, lineBig:big.line, areaBig:big.area, schema, isUci,
+        mapping:(MAP[dSrc.name]||[]).map(m=>({from:m[0],to:m[1]})), harmonNote: dSrc.harmon+' coverage' };
+    }
+
+    // ---- analytics data ----
+    const DOMC={ Health:'#22d3ee', Academic:'#a855f7', Teammate:'#34d399', Synthetic:'#fbbf24' };
+    const tabDefs=[['All','All'],['Health','Health'],['Academic','Academic'],['Teammate','Teammate cohort'],['Synthetic','Synthetic']];
+    const domainTabs=tabDefs.map(t=>{
+      const on=st.analyticsTab===t[0]; const c=DOMC[t[0]]||'#22d3ee';
+      return { label:t[1], pick:()=>this.setState({analyticsTab:t[0]}),
+        style: on?('background:'+this._alpha(c,0.16)+';color:'+c+';'):'',
+        dotStyle: t[0]==='All'?'background:#8593a5;':'background:'+c+';' };
+    });
+    const visibleQ=this.QUERIES.filter(q=> st.analyticsTab==='All' ? true : q.domains.indexOf(st.analyticsTab)>=0);
+    const buildCard=(q)=>{
+      const ch=this._chart(q);
+      return { id:q.id, title:q.title, n:q.n.toLocaleString(),
+        badge: q.synthetic?'SYNTHETIC · DEMO':'AGGREGATE ONLY',
+        badgeColor: q.synthetic?'#fbbf24':'#86efc2', badgeBg: this._alpha(q.synthetic?'#fbbf24':'#34d399',0.13),
+        edge: q.synthetic?'rgba(251,191,36,0.25)':'rgba(255,255,255,0.08)',
+        isLine:ch.kind==='line', isBars:ch.kind==='bars', isScatter:ch.kind==='scatter',
+        line:ch.line, area:ch.area, bars:ch.bars, dots:ch.dots,
+        domainChips:q.domains.map(d=>({label:d, color:DOMC[d]||'#8593a5', bg:this._alpha(DOMC[d]||'#8593a5',0.12)})),
+        sql:q.sql, open:()=>this.setState({queryId:q.id}) };
+    };
+    const queryCards=visibleQ.map(buildCard);
+    const dQ=this.QUERIES.find(q=>q.id===st.queryId);
+    const queryModal = dQ?buildCard(dQ):null;
+
+    // ---- security data ----
+    const svDefs=[['Encryption coverage','100','%','#34d399','verified at rest','⛨'],['Failed access · 24h','7','','#fbbf24','all denied & logged','⊘'],['Open anomalies','3','','#f87171','1 high severity','◬'],['Audit events · 24h','48210','','#22d3ee','immutable ledger','≣']];
+    const secVitals=svDefs.map(v=>({ label:v[0], value:v[1], suffix:v[2]||'', display:Number(v[1]).toLocaleString('en-US')+(v[2]||''), note:v[4], glyph:v[5], color:v[3], edge:this._alpha(v[3]==='#22d3ee'?'#22d3ee':v[3]==='#34d399'?'#34d399':v[3]==='#fbbf24'?'#fbbf24':'#f87171',0.22), iconBg:this._alpha(v[3]==='#22d3ee'?'#22d3ee':v[3]==='#34d399'?'#34d399':v[3]==='#fbbf24'?'#fbbf24':'#f87171',0.13) }));
+    const lfDefs=['ALL','DENY','EXPORT','ERASURE'];
+    const logFilters=lfDefs.map(f=>({ label:f, pick:()=>this.setState({logFilter:f}),
+      style: st.logFilter===f?'background:rgba(34,211,238,0.16);color:#22d3ee;border-color:rgba(34,211,238,0.3);':'' }));
+    const ACTC={READ:'#22d3ee',WRITE:'#34d399',QUERY:'#a855f7',DENY:'#f87171',EXPORT:'#fbbf24',ERASURE:'#f0abfc'};
+    const RESC={allowed:'#86efc2',denied:'#f87171',queued:'#fbbf24',sealed:'#22d3ee'};
+    const RESBG={allowed:'rgba(52,211,153,0.13)',denied:'rgba(248,113,113,0.13)',queued:'rgba(251,191,36,0.13)',sealed:'rgba(34,211,238,0.13)'};
+    const logRows=this.state.liveLog.filter(l=> st.logFilter==='ALL'||l.action===st.logFilter).slice(0,40).map(l=>({
+      uid:l.uid, time:l.time, action:l.action, resource:l.resource, actor:l.actor, result:l.result.toUpperCase(),
+      actionColor:ACTC[l.action]||'#9aa7b8', resColor:RESC[l.result]||'#9aa7b8', resBg:RESBG[l.result]||'rgba(255,255,255,0.05)' }));
+    const encControls=[
+      { label:'At rest', value:'AES-256-GCM', glyph:'⛁', color:'#34d399', iconBg:'rgba(52,211,153,0.13)', hasBar:false },
+      { label:'In transit', value:'TLS 1.3', glyph:'⇅', color:'#22d3ee', iconBg:'rgba(34,211,238,0.13)', hasBar:false },
+      { label:'Key rotation', value:'9 days', glyph:'⟳', color:'#a855f7', iconBg:'rgba(168,85,247,0.13)', hasBar:true, barPct:'70%' },
+      { label:'Pseudonymisation', value:'Active', glyph:'#', color:'#34d399', iconBg:'rgba(52,211,153,0.13)', hasBar:false },
+    ];
+    const anomalies=this.ANOMALIES.map(a=>{ const c=({high:'#f87171',med:'#fbbf24',low:'#22d3ee'})[a.sev]; return { title:a.title, detail:a.detail, sev:a.sev.toUpperCase(), color:c, bg:this._alpha(c,0.14) }; });
+    const compliance=this.COMPLIANCE.map(c=>{ const col=this._statusColor(c.status); return { ref:c.ref, title:c.title, note:c.note, color:col, bg:this._alpha(col,0.13), edge: c.status==='pass'?'rgba(255,255,255,0.08)':this._alpha(col,0.25), statusLabel: c.status==='pass'?'PASS':'ATTENTION' }; });
+    const complPass=this.COMPLIANCE.filter(c=>c.status==='pass').length;
+
+    // ---- consent data ----
+    const CATC={ 'Sleep':'#22d3ee','Heart rate':'#a855f7','Activity':'#34d399','Meals':'#fbbf24','Grades':'#3b82f6','Attendance':'#f0abfc' };
+    const subjects=this.SUBJECTS.map(id=>{ const on=st.subjectId===id; return { id, pick:()=>this.setState({subjectId:id}),
+      edge: on?'rgba(34,211,238,0.4)':'rgba(255,255,255,0.1)', bg:on?'rgba(34,211,238,0.1)':'rgba(255,255,255,0.03)', color:on?'#22d3ee':'#9aa7b8', dot:on?'#22d3ee':'#5f6b7d' }; });
+    const scopes=this.SCOPES.map(s=>{
+      const granted=!!st.consent[s.cat]; const c=CATC[s.cat]||'#22d3ee';
+      const maxB = s.basis.indexOf('Public task')>=0?2190:730;
+      const retPct = granted? Math.min(100, Math.round(s.days/maxB*100))+'%' : '12%';
+      return { cat:s.cat, basis:s.basis, granted, dot:c, glow:this._alpha(c,0.6),
+        statusLabel: granted?'GRANTED':'REVOKED', statusColor: granted?'#86efc2':'#f87171', statusBg: this._alpha(granted?'#34d399':'#f87171',0.13),
+        retLabel: granted? ('auto-delete in '+s.days+'d') : 'erasure scheduled · 30d', retColor: granted?'#8593a5':'#fbbf24',
+        retPct, retBar: granted? ('linear-gradient(90deg,'+c+','+this._alpha(c,0.5)+')') : 'linear-gradient(90deg,#fbbf24,rgba(251,191,36,0.4))',
+        toggle:()=>this._toggleConsent(s.cat),
+        track: granted?'linear-gradient(90deg,#22d3ee,#a855f7)':'rgba(255,255,255,0.08)', trackEdge: granted?'rgba(34,211,238,0.4)':'rgba(255,255,255,0.12)',
+        knobX: granted?'23px':'2px', knob: granted?'#0a0e15':'#9aa7b8' };
+    });
+    const requests=this.REQUESTS.map(r=>{ const exp=r.type==='export'; const done=r.status==='completed';
+      return { id:r.id, subject:r.subject, sla:r.sla, typeLabel: exp?'Export (Art.20)':'Erasure (Art.17)', glyph: exp?'↧':'⌫',
+        color: exp?'#22d3ee':'#f0abfc', bg:this._alpha(exp?'#22d3ee':'#a855f7',0.13), status:r.status.toUpperCase(),
+        statusColor: done?'#86efc2':'#fbbf24', statusBg:this._alpha(done?'#34d399':'#fbbf24',0.13) }; });
+    const activeCount=Object.values(st.consent).filter(Boolean).length;
+    const toast=st.toast;
+
+    return {
+      rootRef:this.rootRef, scrollRef:this.scrollRef,
+      // consent
+      consentDenied: st.role==='analyst', consentAllowed: st.role!=='analyst',
+      subjects, subjectActive: st.subjectId, scopes, requests, goSecurity:this._nav('security'),
+      nextDelete:'Meals log · 30 days', recordsHeld:'3,842', activeConsents: activeCount+' / 6',
+      toastOpen: !!toast, toastMsg: toast?toast.msg:'', toastGlyph: toast&&toast.kind==='grant'?'✓':'⌫',
+      toastColor: toast&&toast.kind==='grant'?'#86efc2':'#fbbf24', toastBg: this._alpha(toast&&toast.kind==='grant'?'#34d399':'#fbbf24',0.14),
+      toastEdge: this._alpha(toast&&toast.kind==='grant'?'#34d399':'#fbbf24',0.3),
+      // security
+      secVitals, logFilters, logRows, encControls, anomalies, anomalyCount:this.ANOMALIES.length,
+      compliance, complPass, complTotal:this.COMPLIANCE.length,
+      // analytics
+      domainTabs, queryCards, synthNote: st.analyticsTab==='Synthetic',
+      queryModalOpen: !!dQ, queryModal, closeQuery:()=>this.setState({queryId:null}), stop:(e)=>e.stopPropagation(),
+      // sources
+      driftAlerts, sourceCards, sourceCount:this.SOURCES.length,
+      srcDrawerOpen: !!dSrc, srcDrawer, closeSrc:()=>this.setState({sourceId:null}),
+      // runs
+      outcomeSegs, sourceOptions, runSource:st.runSource, runQuery:st.runQuery,
+      setSource:(e)=>this.setState({runSource:e.target.value, runPage:0}),
+      setQuery:(e)=>this.setState({runQuery:e.target.value, runPage:0}),
+      clearFilters:()=>this.setState({runOutcome:'all',runSource:'all',runQuery:'',runPage:0}),
+      runCount:count, runTotal:total, runCols, runRows,
+      runGrid:'grid-template-columns:120px minmax(150px,1.4fr) 150px 96px 92px 116px 110px;min-width:900px;',
+      runRowPad: compact?'padding:9px 20px;':'padding:14px 20px;',
+      runsEmpty: count===0, runsHasRows: count>0,
+      pageInfo:'Page '+(page+1)+' of '+pages+' · showing '+pageRows.length+' of '+count,
+      prevPage:()=>this.setState(s=>({runPage:Math.max(0,s.runPage-1)})),
+      nextPage:()=>this.setState(s=>({runPage:Math.min(pages-1,s.runPage+1)})),
+      prevStyle: page<=0?'opacity:0.4;pointer-events:none;':'', nextStyle: page>=pages-1?'opacity:0.4;pointer-events:none;':'',
+      drawerOpen: !!dRun, drawerRun, drawerStages, drawerQuarantine,
+      closeDrawer:()=>this.setState({drawerRunId:null}),
+      // shell
+      navGroups,
+      navWidthStyle:'width:'+(collapsed?'74px':'248px')+';',
+      navLabelStyle: collapsed? 'opacity:0;width:0;overflow:hidden;pointer-events:none;' : 'opacity:1;',
+      navCountStyle:'',
+      collapseGlyph: collapsed?'»':'«',
+      toggleNav: ()=> this.setState({navCollapsed:!collapsed}),
+      pageEyebrow:meta.eb, pageTitle:meta.t,
+      // density
+      density:st.density,
+      setComfortable: ()=> this.setState({density:'comfortable'}),
+      setCompact: ()=> this.setState({density:'compact'}),
+      densComfortStyle: st.density==='comfortable'?'background:rgba(255,255,255,0.1);color:#e8edf4;':'',
+      densCompactStyle: st.density==='compact'?'background:rgba(255,255,255,0.1);color:#e8edf4;':'',
+      // role
+      roleLabel:role.label, roleInitial:role.initial, roleMenuOpen:st.roleMenuOpen,
+      roleCaret: st.roleMenuOpen?'▲':'▼',
+      toggleRoleMenu: ()=> this.setState({roleMenuOpen:!st.roleMenuOpen}),
+      roleList,
+      // pages
+      isOverview: st.page==='overview',
+      isRuns: st.page==='runs',
+      isSources: st.page==='sources',
+      isAnalytics: st.page==='analytics',
+      isSecurity: st.page==='security',
+      isConsent: st.page==='consent',
+      goRuns: this._nav('runs'),
+      // overview
+      vitals, stages, recentRuns, ingestHealth, tickerEvents,
+      syncedAt: this._clock(0),
+    };
+  }
+}
+</script>
+</body>
+</html>
