@@ -1,0 +1,133 @@
+# ─────────────────────────────────────────────────────────────
+# Project-specific (per request)
+# NOTE: git does NOT support trailing inline comments on patterns,
+# so every comment lives on its own line.
+# ─────────────────────────────────────────────────────────────
+
+# Course material / group deliverables — kept private
+assignments/
+
+# Claude's working notes & scratchpad
+claude/
+
+# Documentation folder — kept local (see note in chat)
+docs/
+
+# Raw test datasets (multi-GB) — never commit, never leave the box
+datasets/
+
+# ─────────────────────────────────────────────────────────────
+# Secrets & environment  (NEVER commit — security-first project)
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.env
+secrets/
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+
+# ─────────────────────────────────────────────────────────────
+# Python
+# ─────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+env/
+ENV/
+.python-version
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# ─────────────────────────────────────────────────────────────
+# Node / frontend (if/when added)
+# ─────────────────────────────────────────────────────────────
+node_modules/
+.next/
+out/
+.nuxt/
+dist-ssr/
+*.local
+.pnpm-store/
+.parcel-cache/
+.cache/
+coverage/
+.vite/
+
+# ─────────────────────────────────────────────────────────────
+# Data — never commit real or generated personal data
+# ─────────────────────────────────────────────────────────────
+data/
+*.csv
+*.tsv
+*.parquet
+*.sqlite
+*.sqlite3
+*.db
+*.zip
+dumps/
+backups/
+# keep tracked reference schema SQL
+!**/schema/*.sql
+
+# ─────────────────────────────────────────────────────────────
+# Docker / runtime volumes
+# ─────────────────────────────────────────────────────────────
+*.pid
+*.log
+logs/
+pgdata/
+mongodata/
+volumes/
+
+# ─────────────────────────────────────────────────────────────
+# OS
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ─────────────────────────────────────────────────────────────
+# IDE / editors
+# ─────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+.fleet/
