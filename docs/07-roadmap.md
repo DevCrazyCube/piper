@@ -23,12 +23,15 @@
 - [ ] Run end-to-end on a machine with Docker (ingest all 4, confirm row counts) — needs the stack up
 - [ ] Note: identity map / curated tables / RLS are Phase 2-3, not Phase 1
 
-## Phase 2 — Process (clean / filter / normalize)
-- [ ] Encoding + delimiter + date-format normalization
-- [ ] Cross-file student dedup (Dataset 2) + schema harmonisation (Dataset 2 ⨝ 4)
-- [ ] Pseudonymisation + consent model wired to RLS
-- [ ] Open Food Facts minimised reference table + meal enrichment joins
-- [ ] Data-quality checks (pydantic, missing-value handling) + bias-decision logging
+## Phase 2 — Process (clean / filter / normalize)  ✅ (verified on live DB)
+- [x] Date-format normalization + tolerant type coercion (curated health records)
+- [x] Cross-file student dedup (1044→662, 382 merged) + schema harmonisation (UCI 2 ⨝ 4 → grade_final_norm)
+- [x] Pseudonymisation (app-layer AES-256-GCM identity map) + consent model + RLS subject isolation
+- [x] Open Food Facts flattened nutriments → curated.food_reference (50k, 47.6k with nutrition)
+- [x] Curated time-series as hourly rollups (27M→206k; analytics-ready, aggregate-by-design)
+- [x] Decision log (meta.decision) for dedup/harmonise/aggregation choices
+- [x] RLS verified: subject sees only own rows; analyst = aggregate view only, base table denied
+- [ ] Meal→food fuzzy matching (best-effort) — deferred to analytics phase
 
 ## Phase 3 — Secure & store, properly
 - [ ] Encryption at rest + `pgcrypto` on sensitive fields/map

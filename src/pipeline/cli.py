@@ -42,5 +42,26 @@ def ingest(
         )
 
 
+@app.command()
+def curate(
+    domain: str = typer.Argument("all", help="health | academic | food | all"),
+) -> None:
+    """Phase 2: clean, pseudonymise, dedup, and harmonise raw -> curated zone."""
+    from pipeline.common.db import pg_connection
+    from pipeline.process.curate_academic import curate_academic
+    from pipeline.process.curate_food import curate_food
+    from pipeline.process.curate_health import curate_pmdata
+
+    domains = {"health": curate_pmdata, "academic": curate_academic, "food": curate_food}
+    targets = list(domains) if domain == "all" else [domain]
+    for name in targets:
+        if name not in domains:
+            raise typer.BadParameter(f"unknown domain '{name}'. Choices: {', '.join(domains)}, all")
+    for name in targets:
+        with pg_connection() as conn:
+            counts = domains[name](conn)
+        typer.echo(f"[curate:{name}] {counts}")
+
+
 if __name__ == "__main__":
     app()
