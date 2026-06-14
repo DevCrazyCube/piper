@@ -12,6 +12,12 @@ from pipeline.ingest.uci_performance import UCIPerformanceConnector
 
 app = typer.Typer(help="Aegis — Responsible Learning Analytics Pipeline", no_args_is_help=True)
 
+
+@app.callback()
+def main() -> None:
+    """Aegis — Responsible Learning Analytics Pipeline."""
+    # Presence of a callback keeps subcommands (e.g. `ingest`) required.
+
 _CONNECTORS: dict[str, type[Connector]] = {
     "pmdata": PMDataConnector,
     "uci-performance": UCIPerformanceConnector,

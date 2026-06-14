@@ -52,6 +52,7 @@ class RunContext:
     rows_quarantined: int = 0
     _records: list[tuple] = field(default_factory=list)
     _points: list[tuple] = field(default_factory=list)
+    _stage_ready: bool = False
 
     # -- emit API used by connectors --------------------------------------
     def record(self, rec: RawRecord) -> None:
@@ -112,18 +113,38 @@ class RunContext:
         self._records.clear()
 
     def _flush_points(self) -> None:
+        # High-throughput path: COPY into an unlogged TEMP staging table; the final
+        # upsert into the hypertable (commit_timeseries) handles idempotency. COPY is
+        # ~100x faster than executemany for the ~20M PMData points.
         if not self._points:
             return
+        if not self._stage_ready:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    "CREATE TEMP TABLE IF NOT EXISTS _ts_stage ("
+                    "source text, participant text, metric text, ts timestamptz, "
+                    "value double precision, run_id bigint) ON COMMIT DROP"
+                )
+            self._stage_ready = True
         with self.conn.cursor() as cur:
-            cur.executemany(
-                "INSERT INTO raw.timeseries "
-                "(source, participant, metric, ts, value, run_id) "
-                "VALUES (%s, %s, %s, %s, %s, %s) "
-                "ON CONFLICT (source, participant, metric, ts) DO NOTHING",
-                self._points,
-            )
+            with cur.copy(
+                "COPY _ts_stage (source, participant, metric, ts, value, run_id) FROM STDIN"
+            ) as cp:
+                for row in self._points:
+                    cp.write_row(row)
         self.rows_out += len(self._points)
         self._points.clear()
+
+    def commit_timeseries(self) -> None:
+        """Move staged points into the hypertable, idempotently. Call once at run end."""
+        if not self._stage_ready:
+            return
+        with self.conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO raw.timeseries (source, participant, metric, ts, value, run_id) "
+                "SELECT source, participant, metric, ts, value, run_id FROM _ts_stage "
+                "ON CONFLICT (source, participant, metric, ts) DO NOTHING"
+            )
 
 
 class Connector(ABC):
@@ -151,6 +172,7 @@ def run_ingest(connector: Connector) -> RunContext:
         try:
             connector.run(ctx)
             ctx.flush()
+            ctx.commit_timeseries()
         except Exception as exc:
             ctx.flush()
             _finalize(conn, ctx, "failed", detail={"error": str(exc)})

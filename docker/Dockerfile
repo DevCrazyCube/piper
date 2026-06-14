@@ -7,14 +7,12 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# Install dependencies first for layer caching.
-COPY pyproject.toml ./
-RUN pip install --upgrade pip && pip install ".[dev]"
-
-# Source is bind-mounted in compose for dev; copy for standalone builds too.
+# Copy project (source is also bind-mounted in compose; PYTHONPATH makes the live
+# mount win at runtime). Needed here so setuptools can build the package.
+COPY pyproject.toml alembic.ini ./
 COPY src ./src
 COPY db ./db
-COPY alembic.ini ./alembic.ini
+RUN pip install --upgrade pip && pip install ".[dev]"
 
 # Run as a non-root user (least privilege).
 RUN useradd --create-home --uid 10001 aegis && chown -R aegis:aegis /app

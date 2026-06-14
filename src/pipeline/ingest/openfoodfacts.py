@@ -17,19 +17,17 @@ from pipeline.ingest.base import Connector, RawRecord, RunContext
 log = get_logger("ingest.openfoodfacts")
 
 # Minimised, relevant columns (data minimisation). Only those present are used.
+# Nutrition lives in a nested `nutriments` List(Struct{name,value,'100g',unit,...}) — we keep
+# the whole nested column raw; Phase 2 flattens energy-kcal/fat/sugar/etc. out of it.
 _DESIRED = [
     "code",
     "product_name",
     "brands",
     "categories_tags",
     "nutriscore_grade",
-    "energy-kcal_100g",
-    "fat_100g",
-    "saturated-fat_100g",
-    "carbohydrates_100g",
-    "sugars_100g",
-    "proteins_100g",
-    "salt_100g",
+    "nutriscore_score",
+    "nutrition_data_per",
+    "nutriments",
     "countries_tags",
 ]
 
