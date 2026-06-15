@@ -1,6 +1,13 @@
 import { type ReactNode, useEffect, useState } from "react";
+import {
+  Area, AreaChart, Bar as RBar, BarChart, CartesianGrid, Cell,
+  ResponsiveContainer, Scatter as RScatter, ScatterChart, Tooltip, XAxis, YAxis,
+} from "recharts";
 import { useCountUp } from "../lib/motion";
 import type { Vital } from "../api";
+
+const ACCENT = "#4338ca";
+const ACCENT2 = "#0e8f86";
 
 export function useData<T>(fn: () => Promise<T>, initial: T): T {
   const [d, setD] = useState<T>(initial);
@@ -18,10 +25,10 @@ export function Panel({ eyebrow, title, action, children, className = "" }: {
   return (
     <div className={`glass panel ${className}`} data-anim>
       {(title || action) && (
-        <div className="row-between" style={{ marginBottom: 16 }}>
+        <div className="row-between" style={{ marginBottom: 18 }}>
           <div>
             {eyebrow && <div className="eyebrow">{eyebrow}</div>}
-            {title && <h2 style={{ margin: eyebrow ? "4px 0 0" : 0 }}>{title}</h2>}
+            {title && <h2 style={{ marginTop: eyebrow ? 4 : 0 }}>{title}</h2>}
           </div>
           {action}
         </div>
@@ -37,83 +44,106 @@ export function Pill({ kind = "", children }: { kind?: string; children: ReactNo
 
 const num = (s: string) => parseFloat(s.replace(/,/g, ""));
 
-export function Stat({ v }: { v: Vital }) {
+function Value({ v }: { v: Vital }) {
   const isNum = !Number.isNaN(num(v.value));
   const dec = v.value.includes(".") ? (v.value.split(".")[1]?.length ?? 0) : 0;
   const counted = useCountUp(isNum ? num(v.value) : 0, dec);
-  const dotColor = v.tone === "bad" ? "var(--danger)" : v.tone === "warn" ? "var(--warning)" : "var(--success)";
+  return <>{isNum ? counted : v.value}{v.unit && <span className="unit">{v.unit}</span>}</>;
+}
+
+/** One calm KPI ribbon (hairline-separated) — replaces a row of boxes. */
+export function Ribbon({ vitals }: { vitals: Vital[] }) {
+  return (
+    <div className="glass ribbon" data-anim>
+      {vitals.map((v) => (
+        <div key={v.label} className="kpi">
+          <div className="label">{v.label}</div>
+          <div className="value"><Value v={v} /></div>
+          {v.sub && <div className={`sub ${v.tone === "bad" ? "bad" : v.tone === "warn" ? "warn" : ""}`}>{v.sub}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function Stat({ v }: { v: Vital }) {
+  const dot = v.tone === "bad" ? "var(--danger)" : v.tone === "warn" ? "var(--warning)" : "var(--success)";
   return (
     <div className="glass stat" data-anim>
-      <div className="label">{v.label}<span style={{ width: 7, height: 7, borderRadius: 99, background: dotColor }} /></div>
-      <div className="value">{isNum ? counted : v.value}{v.unit && <span className="unit">{v.unit}</span>}</div>
+      <div className="label">{v.label}<span style={{ width: 6, height: 6, borderRadius: 99, background: dot }} /></div>
+      <div className="value"><Value v={v} /></div>
       {v.sub && <div className={`sub ${v.tone === "bad" ? "bad" : v.tone === "warn" ? "warn" : ""}`}>{v.sub}</div>}
     </div>
   );
 }
 
-/* ---------- charts (hand-built SVG, with axes) ---------- */
-const W = 320, H = 120, PAD = 22;
+/* ---------- charts (Recharts, themed minimal) ---------- */
+const Tip = ({ active, payload }: any) =>
+  active && payload?.length ? <div className="tip">{(+payload[0].value).toLocaleString()}</div> : null;
 
-export function LineChart({ data, color = "var(--cyan)" }: { data: number[]; color?: string }) {
-  const max = Math.max(...data), min = Math.min(...data, 0);
-  const x = (i: number) => PAD + (i / (data.length - 1)) * (W - PAD * 2);
-  const y = (v: number) => H - PAD - ((v - min) / (max - min || 1)) * (H - PAD * 2);
-  const pts = data.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+export function LineChart({ data, color = ACCENT }: { data: number[]; color?: string }) {
+  const d = data.map((v, i) => ({ i, v }));
   return (
-    <div className="chart">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="line chart">
-        {[0, 0.5, 1].map((t) => <line key={t} className="gridline" x1={PAD} x2={W - PAD} y1={PAD + t * (H - PAD * 2)} y2={PAD + t * (H - PAD * 2)} />)}
-        <line className="axis" x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} />
-        <polygon fill={color} opacity="0.12" points={`${PAD},${H - PAD} ${pts} ${W - PAD},${H - PAD}`} />
-        <polyline fill="none" stroke={color} strokeWidth="2" points={pts} style={{ filter: `drop-shadow(0 0 4px ${color})` }} />
-        <text className="tick" x={PAD} y={12}>{max.toFixed(0)}</text>
-        <text className="tick" x={PAD} y={H - PAD + 12}>{min.toFixed(0)}</text>
-      </svg>
+    <div className="chart" style={{ height: 150 }}>
+      <ResponsiveContainer>
+        <AreaChart data={d} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity={0.18} /><stop offset="100%" stopColor={color} stopOpacity={0} /></linearGradient></defs>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="i" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
+          <YAxis tickLine={false} axisLine={false} width={36} tick={{ fontSize: 10 }} />
+          <Tooltip content={<Tip />} cursor={{ stroke: color, strokeOpacity: 0.3 }} />
+          <Area type="monotone" dataKey="v" stroke={color} strokeWidth={2} fill="url(#g)" />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 }
 
-export function Bars({ data, labels, color = "var(--cyan)" }: { data: number[]; labels?: string[]; color?: string }) {
-  const max = Math.max(...data);
-  const bw = (W - PAD * 2) / data.length;
+export function Bars({ data, labels, color = ACCENT }: { data: number[]; labels?: string[]; color?: string }) {
+  const d = data.map((v, i) => ({ name: labels?.[i] ?? String(i + 1), v }));
   return (
-    <div className="chart">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="bar chart">
-        <line className="axis" x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} />
-        {data.map((v, i) => {
-          const h = (v / max) * (H - PAD * 2);
-          return <rect key={i} x={PAD + i * bw + bw * 0.18} y={H - PAD - h} width={bw * 0.64} height={h}
-            rx="3" fill={color} opacity={0.55 + 0.45 * (v / max)} />;
-        })}
-        {labels?.map((l, i) => <text key={i} className="tick" x={PAD + i * bw + bw / 2} y={H - PAD + 12} textAnchor="middle">{l}</text>)}
-        <text className="tick" x={PAD} y={12}>{max.toFixed(max < 5 ? 2 : 0)}</text>
-      </svg>
+    <div className="chart" style={{ height: 150 }}>
+      <ResponsiveContainer>
+        <BarChart data={d} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
+          <YAxis tickLine={false} axisLine={false} width={36} tick={{ fontSize: 10 }} />
+          <Tooltip content={<Tip />} cursor={{ fill: "rgba(67,56,202,0.06)" }} />
+          <RBar dataKey="v" radius={[4, 4, 0, 0]}>
+            {d.map((_, i) => <Cell key={i} fill={color} fillOpacity={0.55 + 0.45 * (d[i].v / Math.max(...data))} />)}
+          </RBar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
 
-export function Scatter({ data, color = "var(--violet)" }: { data: number[]; color?: string }) {
-  const max = Math.max(...data), min = Math.min(...data);
+export function Scatter({ data, color = ACCENT2 }: { data: number[]; color?: string }) {
+  const d = data.map((v, i) => ({ x: i + 1, y: v }));
   return (
-    <div className="chart">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="scatter plot">
-        <line className="axis" x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} />
-        <line className="axis" x1={PAD} y1={PAD} x2={PAD} y2={H - PAD} />
-        {data.map((v, i) => {
-          const cx = PAD + ((i + 0.5) / data.length) * (W - PAD * 2);
-          const cy = H - PAD - ((v - min) / (max - min || 1)) * (H - PAD * 2);
-          return <circle key={i} cx={cx} cy={cy} r="3.5" fill={color} opacity="0.8" style={{ filter: `drop-shadow(0 0 3px ${color})` }} />;
-        })}
-      </svg>
+    <div className="chart" style={{ height: 150 }}>
+      <ResponsiveContainer>
+        <ScatterChart margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
+          <CartesianGrid />
+          <XAxis type="number" dataKey="x" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
+          <YAxis type="number" dataKey="y" tickLine={false} axisLine={false} width={36} tick={{ fontSize: 10 }} />
+          <Tooltip content={<Tip />} cursor={{ strokeOpacity: 0.2 }} />
+          <RScatter data={d} fill={color} fillOpacity={0.75} />
+        </ScatterChart>
+      </ResponsiveContainer>
     </div>
   );
 }
 
-export function Sparkline({ data, color = "var(--success)" }: { data: number[]; color?: string }) {
-  const max = Math.max(...data), min = Math.min(...data);
-  const w = 120, h = 30;
-  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / (max - min || 1)) * h}`).join(" ");
-  return <svg width={w} height={h} style={{ display: "block" }}><polyline fill="none" stroke={color} strokeWidth="1.8" points={pts} /></svg>;
+export function Sparkline({ data, color = ACCENT }: { data: number[]; color?: string }) {
+  const d = data.map((v, i) => ({ i, v }));
+  const id = `sp-${color.replace(/[^a-z0-9]/gi, "")}`;
+  return (
+    <AreaChart data={d} width={116} height={32} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
+      <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity={0.2} /><stop offset="100%" stopColor={color} stopOpacity={0} /></linearGradient></defs>
+      <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.6} fill={`url(#${id})`} />
+    </AreaChart>
+  );
 }
 
 export function Bar({ pct, color }: { pct: number; color?: string }) {
