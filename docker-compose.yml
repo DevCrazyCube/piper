@@ -54,3 +54,17 @@ services:
       db:
         condition: service_healthy
     command: ["uvicorn", "pipeline.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      # the browser calls the API on the host-mapped port
+      VITE_API_BASE: http://localhost:8000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules   # keep the image's installed deps over the bind mount
+    command: ["npm", "run", "dev", "--", "--host", "--port", "5173"]

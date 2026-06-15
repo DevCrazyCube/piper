@@ -10,8 +10,9 @@ assignments/
 # Claude's working notes & scratchpad
 claude/
 
-# Raw test datasets (multi-GB) — never commit, never leave the box
-datasets/
+# datasets/: the small public UCI zips ARE tracked (teammate convenience — see negations
+# in the Data section below). The multi-GB files (food.parquet, pmdata.zip) stay ignored —
+# GitHub rejects files >100MB; share those out of band (drive link / Git LFS).
 
 # NOTE: docs/ is intentionally TRACKED (version-controlled) — decided 2026-06-13.
 
@@ -93,6 +94,9 @@ data/
 *.sqlite3
 *.db
 *.zip
+# …but DO track the small public UCI datasets (teammate convenience, ~56KB total).
+!datasets/student+performance.zip
+!datasets/student+academics+performance.zip
 dumps/
 backups/
 # keep tracked reference schema SQL

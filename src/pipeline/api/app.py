@@ -8,9 +8,11 @@ Auth headers (see api/auth.py):
 from __future__ import annotations
 
 from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 
 from pipeline.api.auth import verify
 from pipeline.api.models import IngestRequest
+from pipeline.api.read import router as read_router
 from pipeline.common.crypto import aad_for, get_cipher
 from pipeline.common.db import pg_connection
 from pipeline.common.logging import get_logger
@@ -18,6 +20,15 @@ from pipeline.process.pseudonymise import get_or_create_subject
 
 log = get_logger("api")
 app = FastAPI(title="Piper Ingest API", version="0.1.0")
+
+# Dashboard (Vite dev server / preview) calls the read endpoints from the browser.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:4173"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+app.include_router(read_router)
 
 
 @app.get("/healthz")

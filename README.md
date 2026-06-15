@@ -134,7 +134,12 @@ The phone's auto-export app then POSTs signed JSON to `http://<host>:8000/v1/ing
 |---|---|
 | `db` | PostgreSQL 16 + TimescaleDB |
 | `app` | the pipeline CLI (`python -m pipeline …`) — ingest, curate, analyse, privacy commands |
-| `api` | FastAPI webhook ingest on port `8000` |
+| `api` | FastAPI webhook ingest + read endpoints on port `8000` |
+| `frontend` | the **Piper dashboard** (React + Vite) on port `5173` — neon-cyber, live pipeline view |
+
+> **Open the dashboard:** after `make up`, browse to **http://localhost:5173**. It shows the live
+> pipeline, runs, sources, analytics, security/audit, and consent. It reads the API's `/v1/*`
+> endpoints and falls back to seeded demo data if the API isn't up. (Source in `frontend/`.)
 
 **Database schemas:** `raw` (landing) · `curated` (analytics-ready) · `id` (encrypted
 pseudonymisation map, app-only) · `consent` · `meta` (provenance, audit log, quarantine, receipts).
