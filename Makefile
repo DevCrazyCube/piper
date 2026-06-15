@@ -37,6 +37,12 @@ ingest-uci-academics:    ## Ingest UCI Student Academics (ARFF)
 ingest-food:             ## Ingest Open Food Facts (minimised reference subset)
 	$(EXEC) python -m pipeline ingest openfoodfacts
 
+backup:              ## Encrypted logical backup (3-2-1)
+	bash scripts/backup.sh
+
+erase:               ## GDPR Art.17 erase: make erase PID=<uuid>
+	$(EXEC) python -m pipeline erase $(PID)
+
 lint:                ## ruff + mypy
 	$(EXEC) ruff check src tests && $(EXEC) mypy src
 

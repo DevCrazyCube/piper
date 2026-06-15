@@ -20,7 +20,8 @@ _DEDUP_KEYS = (
 )
 
 # Academics exam-band -> 0..1 normalised grade (scale reconciliation with G3/20).
-_BAND_NORM = {"Best": 1.0, "Vg": 0.8, "Good": 0.6, "Pass": 0.4, "Fail": 0.2}
+# ("Pass" is an exam band, not a password — nosec silences B105's false positive.)
+_BAND_NORM = {"Best": 1.0, "Vg": 0.8, "Good": 0.6, "Pass": 0.4, "Fail": 0.2}  # nosec B105
 
 
 def curate_academic(conn: psycopg.Connection) -> dict[str, int]:

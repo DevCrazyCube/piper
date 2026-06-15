@@ -33,12 +33,16 @@
 - [x] RLS verified: subject sees only own rows; analyst = aggregate view only, base table denied
 - [ ] Meal→food fuzzy matching (best-effort) — deferred to analytics phase
 
-## Phase 3 — Secure & store, properly
-- [ ] Encryption at rest + `pgcrypto` on sensitive fields/map
-- [ ] RBAC roles + least-privilege grants + RLS policies
-- [ ] Audit logging + simple anomaly detection
-- [ ] Backups (3-2-1), retention policies, erasure (Art. 17) + deletion receipts
-- [ ] SAST (`bandit`), deps (`pip-audit`), DAST-light on the API
+## Phase 3 — Secure & store, properly  ✅ (verified on live DB)
+- [x] App-layer AES-256-GCM on the identity map (encrypt-before-INSERT; decrypt round-trip verified)
+- [x] RBAC: analyst (aggregate view only), subject (RLS own-rows), engineer (no identity map) — all verified denied/allowed correctly
+- [x] Audit logging (meta.audit_log + triggers on consent + identity) — fires on change
+- [x] Anomaly view (bursty-actor detection over audit log)
+- [x] Erasure (Art. 17): cascade curated+raw+map, signed deletion receipt — verified (p16: 1.79M rows → 0)
+- [x] Retention policy on raw time-series (TimescaleDB) — registered
+- [x] Encrypted 3-2-1 backup script + restore-verify (117M dump, decrypts to valid SQL)
+- [x] SAST (bandit) clean + pip-audit (no CVEs)
+- [ ] DAST-light on the webhook API — after Phase 4 builds it
 
 ## Phase 4 — Real-time ingest
 - [ ] FastAPI webhook ingest (authenticated, validated) — the future-API seam

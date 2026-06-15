@@ -63,5 +63,16 @@ def curate(
         typer.echo(f"[curate:{name}] {counts}")
 
 
+@app.command()
+def erase(subject_pid: str = typer.Argument(..., help="subject_pid (UUID) to erase")) -> None:
+    """GDPR Art. 17: erase a subject across curated + raw + identity map; write a receipt."""
+    from pipeline.common.db import pg_connection
+    from pipeline.process.erase import erase_subject
+
+    with pg_connection() as conn:
+        counts = erase_subject(conn, subject_pid)
+    typer.echo(f"[erase:{subject_pid}] {counts}")
+
+
 if __name__ == "__main__":
     app()
