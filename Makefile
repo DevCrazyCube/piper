@@ -17,8 +17,13 @@ down:                ## Stop the stack
 logs:                ## Tail logs
 	$(DC) logs -f
 
-migrate:             ## Apply DB migrations (schema, hypertables, RLS scaffold)
+migrate:             ## Apply DB migrations (schema, hypertables, RLS, roles)
 	$(EXEC) alembic upgrade head
+
+bootstrap:           ## Set the app-role password (run once, after migrate)
+	$(EXEC) python -m pipeline bootstrap
+
+setup: up migrate bootstrap  ## One-shot first-run: start + migrate + bootstrap
 
 shell:               ## Open a shell in the app container
 	$(EXEC) bash
@@ -36,6 +41,9 @@ ingest-uci-academics:    ## Ingest UCI Student Academics (ARFF)
 
 ingest-food:             ## Ingest Open Food Facts (minimised reference subset)
 	$(EXEC) python -m pipeline ingest openfoodfacts
+
+curate:              ## Curate raw -> curated (make curate D=all|health|academic|food)
+	$(EXEC) python -m pipeline curate $(or $(D),all)
 
 analyse:             ## Run the 5 aggregate analytics queries (make analyse Q=all|q1..q5)
 	$(EXEC) python -m pipeline analyse $(or $(Q),all)
