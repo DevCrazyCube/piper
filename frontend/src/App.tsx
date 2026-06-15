@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink, Route, Routes, useLocation } from "react-router-dom";
-import { useAurora } from "./lib/motion";
 import { Overview } from "./pages/Overview";
 import { Runs } from "./pages/Runs";
 import { Sources } from "./pages/Sources";
@@ -20,7 +19,6 @@ const ROUTES: RouteMeta[] = [
 const ROLES = ["Data engineer", "Analyst", "Data subject", "Auditor"];
 
 export default function App() {
-  useAurora();
   const [role, setRole] = useState(ROLES[0]);
   const loc = useLocation();
   const meta = ROUTES.find((r) => r.path === loc.pathname) ?? ROUTES[0];
@@ -28,7 +26,7 @@ export default function App() {
 
   return (
     <>
-      <div className="void"><div className="aurora a" /><div className="aurora b" /></div>
+      <div className="void" />
       <div className="shell">
         <nav className="nav">
           <div className="brand">
