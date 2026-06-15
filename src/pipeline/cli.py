@@ -91,6 +91,29 @@ def register_device(
 
 
 @app.command()
+def analyse(
+    query: str = typer.Argument("all", help="q1..q5 or all"),
+) -> None:
+    """Phase 5: run the aggregate-only analytics queries over the curated zone."""
+    from pipeline.analyse.queries import QUERIES, run_query
+    from pipeline.common.db import pg_connection
+
+    by_key = {q.key: q for q in QUERIES}
+    targets = QUERIES if query == "all" else [by_key[query]] if query in by_key else None
+    if targets is None:
+        raise typer.BadParameter(f"unknown query '{query}'. Choices: {', '.join(by_key)}, all")
+    with pg_connection() as conn:
+        for q in targets:
+            cols, rows = run_query(conn, q)
+            typer.echo(f"\n[{q.key}] {q.title}  (domain: {q.domain}, aggregate-only)")
+            typer.echo("  " + " | ".join(cols))
+            for r in rows:
+                typer.echo("  " + " | ".join("" if v is None else str(v) for v in r))
+            if not rows:
+                typer.echo("  (no rows)")
+
+
+@app.command()
 def erase(subject_pid: str = typer.Argument(..., help="subject_pid (UUID) to erase")) -> None:
     """GDPR Art. 17: erase a subject across curated + raw + identity map; write a receipt."""
     from pipeline.common.db import pg_connection

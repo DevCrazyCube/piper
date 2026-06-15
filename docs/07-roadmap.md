@@ -52,10 +52,15 @@
 - [ ] Apple Health `export.zip` fallback importer (deferred — no sample export to verify against)
 - [ ] (Optional) Kafka/Redis Streams queue for the distributed-systems angle
 
-## Phase 5 — Analyse
-- [ ] Implement the 5 cross-source queries against curated views
-- [ ] Continuous aggregates for the time-series queries
-- [ ] Confirm + implement Q4/Q5 with the group
+## Phase 5 — Analyse  ✅ (verified on live DB)
+- [x] 5 aggregate-only queries over curated zone, domain-scoped (ADR-0009), k-anonymity HAVING floor
+  - Q1 avg & range of daily active minutes (health)
+  - Q2 weekly activity-minutes cohort trend (health)
+  - Q3 study time vs grade_final_norm (academic)
+  - Q4 sleep↔steps correlation, cohort (health)
+  - Q5 cross-institutional grade distribution, uci-perf vs uci-academics (academic)
+- [x] CLI `python -m pipeline analyse [q1..q5|all]` + `make analyse`
+- [ ] Continuous aggregates / meal↔food fuzzy match — optional future
 
 ## Phase 6 — Deliverable polish
 - [ ] Security policy document (DELICATE-structured, GDPR + ISO 27001 cross-ref)

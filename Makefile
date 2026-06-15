@@ -37,6 +37,9 @@ ingest-uci-academics:    ## Ingest UCI Student Academics (ARFF)
 ingest-food:             ## Ingest Open Food Facts (minimised reference subset)
 	$(EXEC) python -m pipeline ingest openfoodfacts
 
+analyse:             ## Run the 5 aggregate analytics queries (make analyse Q=all|q1..q5)
+	$(EXEC) python -m pipeline analyse $(or $(Q),all)
+
 backup:              ## Encrypted logical backup (3-2-1)
 	bash scripts/backup.sh
 
