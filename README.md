@@ -1,4 +1,4 @@
-# Responsible Learning Analytics Pipeline
+# Piper — Responsible Learning Analytics Pipeline
 
 A **security-first data engineering pipeline** that ingests raw, messy multi-source learning &
 wellness data, **cleans → filters → normalizes → secures** it, and lands it in a hardened
