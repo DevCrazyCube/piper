@@ -87,8 +87,8 @@ def _curate_sleep(cur: psycopg.Cursor, pids: dict[str, object]) -> int:
             continue
         summary = (payload.get("levels") or {}).get("summary") or {}
 
-        def _min(stage: str) -> int | None:
-            return to_int((summary.get(stage) or {}).get("minutes"))
+        def _min(stage: str, _summary: dict = summary) -> int | None:
+            return to_int((_summary.get(stage) or {}).get("minutes"))
 
         try:
             start_ts = normalize_timestamp(payload["startTime"])

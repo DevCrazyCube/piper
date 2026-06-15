@@ -16,6 +16,7 @@ import io
 import json
 import re
 import zipfile
+from typing import Any
 
 import ijson
 
@@ -47,7 +48,7 @@ _CSV_RECORDS = {
 _PARTICIPANT_RE = re.compile(r"^(p\d+)/")
 
 
-def _numeric(value: object) -> float | None:
+def _numeric(value: Any) -> float | None:
     if isinstance(value, dict):
         if "bpm" in value:
             return float(value["bpm"])

@@ -10,7 +10,9 @@ Read in order for the full picture; each doc is self-contained.
 6. [`05-compliance.md`](05-compliance.md) — GDPR / ISO 27001 / EU Data Act / DELICATE mapping
 7. [`06-data-model.md`](06-data-model.md) — database schema / data model
 8. [`07-roadmap.md`](07-roadmap.md) — phased build plan
-9. [`frontend-master-prompt.md`](frontend-master-prompt.md) — design brief to paste into Claude design (frontend, deferred)
+9. [`security-policy.md`](security-policy.md) — **deliverable**: DELICATE-structured data security policy (GDPR + ISO 27001)
+10. [`bias-mitigation.md`](bias-mitigation.md) — **deliverable**: documented data-engineering bias decisions
+11. [`frontend-master-prompt.md`](frontend-master-prompt.md) — design brief to paste into Claude design (frontend, deferred)
 
 ### Decision records
 [`adr/`](adr/) — numbered Architecture Decision Records (0001–0010). Start at

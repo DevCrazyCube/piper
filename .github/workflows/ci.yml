@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[dev]"
+      - name: Lint (ruff)
+        run: ruff check src tests
+      - name: Types (mypy)
+        run: mypy src
+      - name: SAST (bandit)
+        run: bandit -r src -q
+      - name: Dependency audit (pip-audit)
+        run: pip-audit || true   # advisory; don't fail the build on a new upstream CVE
+      - name: Tests (pytest)
+        run: pytest -q   # DB-free: parsing/crypto/auth unit tests (connectors use a fake context)
+
+  image-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -f docker/Dockerfile -t aegis-pipeline:ci .
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: aegis-pipeline:ci
+          severity: HIGH,CRITICAL
+          exit-code: "0"   # advisory in CI; review findings

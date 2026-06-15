@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import psycopg
 from psycopg.types.json import Json
 
@@ -9,7 +11,7 @@ _TRUE = {"yes", "true", "1", "y"}
 _FALSE = {"no", "false", "0", "n"}
 
 
-def to_int(value: object) -> int | None:
+def to_int(value: Any) -> int | None:
     if value is None or value == "":
         return None
     try:
@@ -18,7 +20,7 @@ def to_int(value: object) -> int | None:
         return None
 
 
-def to_float(value: object) -> float | None:
+def to_float(value: Any) -> float | None:
     if value is None or value == "":
         return None
     try:

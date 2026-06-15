@@ -64,7 +64,7 @@ def read_rows(lines: Iterable[str]) -> Iterator[dict[str, object]]:
                 f"ARFF row has {len(values)} values, expected {len(names)}: {values!r}"
             )
         record: dict[str, object] = {}
-        for attr, value in zip(attributes, values):
+        for attr, value in zip(attributes, values, strict=False):
             v = value.strip()
             if v in ("?", ""):
                 record[attr.name] = None

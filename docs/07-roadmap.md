@@ -62,11 +62,12 @@
 - [x] CLI `python -m pipeline analyse [q1..q5|all]` + `make analyse`
 - [ ] Continuous aggregates / meal↔food fuzzy match — optional future
 
-## Phase 6 — Deliverable polish
-- [ ] Security policy document (DELICATE-structured, GDPR + ISO 27001 cross-ref)
-- [ ] Bias-mitigation decision log writeup
-- [ ] **Synthetic test fixtures** (mimic each format's messiness — no real PII/datasets in CI)
-- [ ] Tests + CI (`bandit`, `pip-audit`, `trivy`, `ruff`, `mypy`, `pytest`); reproducibility check on a clean machine
+## Phase 6 — Deliverable polish  ✅
+- [x] Security policy (`docs/security-policy.md`) — DELICATE-structured, GDPR + ISO 27001 mapped, controls cited
+- [x] Bias-mitigation decision write-up (`docs/bias-mitigation.md`) — backed by the live `meta.decision` log
+- [x] Synthetic fixture tests (connectors via FakeContext, HMAC auth, crypto) — no real PII/datasets
+- [x] CI (`.github/workflows/ci.yml`): ruff, mypy, bandit, pip-audit, pytest + trivy image scan
+- [x] Quality gate green: ruff ✓ mypy ✓ pytest 33 ✓ bandit ✓ (`make check`)
 
 ## Phase 7 — Frontend (deliberate, not slop)
 - [ ] Design pass using a real frontend-design skill / crafted master prompt

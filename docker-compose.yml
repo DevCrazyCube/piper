@@ -29,6 +29,8 @@ services:
     volumes:
       - ./src:/app/src
       - ./db:/app/db
+      - ./tests:/app/tests
+      - ./pyproject.toml:/app/pyproject.toml
       - ./alembic.ini:/app/alembic.ini
       - ./datasets:/data/datasets:ro   # raw test data, read-only; never leaves the box
     depends_on:
