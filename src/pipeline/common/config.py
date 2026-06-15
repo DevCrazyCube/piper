@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     master_key: SecretStr = SecretStr("")
 
     datasets_dir: Path = Path("/data/datasets")
+
+    # Cap PMData ingest to the first N participants (0 = all 16). Set small (e.g. 2) for
+    # quick, low-memory testing — the full ingest streams ~27M points and is heavy.
+    pmdata_max_participants: int = 0
     log_level: str = "INFO"
 
     def _dsn(self, user: str, pwd: str) -> str:

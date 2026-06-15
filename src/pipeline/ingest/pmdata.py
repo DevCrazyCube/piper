@@ -22,7 +22,10 @@ import ijson
 
 from pipeline.common.config import get_settings
 from pipeline.common.dates import normalize_timestamp
+from pipeline.common.logging import get_logger
 from pipeline.ingest.base import Connector, RawRecord, RunContext, TimeSeriesPoint
+
+log = get_logger("ingest.pmdata")
 
 # Intraday time-series files -> raw.timeseries (metric = file stem).
 _TS_METRICS = (
@@ -70,6 +73,10 @@ class PMDataConnector(Connector):
             participants = sorted(
                 {m.group(1) for n in names if (m := _PARTICIPANT_RE.match(n))}
             )
+            limit = get_settings().pmdata_max_participants
+            if limit and limit > 0:
+                participants = participants[:limit]
+                log.info("pmdata.limited", participants=len(participants), note="testing subset")
             for pid in participants:
                 self._ingest_participant(ctx, zf, names, pid)
 

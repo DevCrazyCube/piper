@@ -77,6 +77,10 @@ make ingest       # land all 4 datasets into the raw zone (PMData is large: ~40 
 make curate       # build the curated zone (clean, pseudonymise, dedup, harmonise)
 ```
 
+> 👥 **Teammates / quick testing:** the full PMData ingest is heavy (~40 min, can freeze a laptop).
+> Set `PIPER_PMDATA_MAX_PARTICIPANTS=2` in `.env` for a fast, low-memory run — or skip PMData and
+> test the academic/food domains. Full walkthrough: **[`docs/TESTING.md`](docs/TESTING.md)**.
+
 Individual sources/domains if you don't want the full run:
 
 ```bash
