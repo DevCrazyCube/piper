@@ -70,13 +70,13 @@ def upgrade() -> None:
     )
 
     # --- RBAC: pipeline engineer role (least privilege; NO access to the identity map) -
-    op.execute("DO $$ BEGIN CREATE ROLE aegis_engineer NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$")
-    op.execute("GRANT USAGE ON SCHEMA raw, curated, meta TO aegis_engineer")
-    op.execute("GRANT SELECT ON ALL TABLES IN SCHEMA raw TO aegis_engineer")
-    op.execute("GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA curated TO aegis_engineer")
-    op.execute("GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA meta TO aegis_engineer")
+    op.execute("DO $$ BEGIN CREATE ROLE piper_engineer NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$")
+    op.execute("GRANT USAGE ON SCHEMA raw, curated, meta TO piper_engineer")
+    op.execute("GRANT SELECT ON ALL TABLES IN SCHEMA raw TO piper_engineer")
+    op.execute("GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA curated TO piper_engineer")
+    op.execute("GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA meta TO piper_engineer")
     # Note: NO grant on schema `id` — engineers cannot read the pseudonymisation map.
-    op.execute("REVOKE ALL ON SCHEMA id FROM aegis_engineer")
+    op.execute("REVOKE ALL ON SCHEMA id FROM piper_engineer")
 
     # --- Anomaly detection (illustrative): bursty actors in the audit log --------------
     op.execute(
@@ -106,4 +106,4 @@ def downgrade() -> None:
     op.execute("DROP TRIGGER IF EXISTS audit_consent ON consent.consent")
     op.execute("DROP FUNCTION IF EXISTS meta.audit_event")
     op.execute("DROP TABLE IF EXISTS meta.audit_log")
-    op.execute("DROP ROLE IF EXISTS aegis_engineer")
+    op.execute("DROP ROLE IF EXISTS piper_engineer")

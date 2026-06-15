@@ -4,7 +4,7 @@
 import os
 import unittest
 
-os.environ.setdefault("AEGIS_MASTER_KEY", "")  # avoid .env dependency at import
+os.environ.setdefault("PIPER_MASTER_KEY", "")  # avoid .env dependency at import
 
 try:
     from cryptography.exceptions import InvalidTag

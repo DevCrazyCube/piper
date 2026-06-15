@@ -15,7 +15,7 @@ COPY db ./db
 RUN pip install --upgrade pip && pip install ".[dev]"
 
 # Run as a non-root user (least privilege).
-RUN useradd --create-home --uid 10001 aegis && chown -R aegis:aegis /app
-USER aegis
+RUN useradd --create-home --uid 10001 piper && chown -R piper:piper /app
+USER piper
 
 ENV PYTHONPATH=/app/src

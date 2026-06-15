@@ -1,6 +1,6 @@
 # Bias-Mitigation Decisions — Data Engineering
 
-**Pillar:** Bias & fairness (Daniels) · **Scope:** the *data-engineering* decisions in the Aegis
+**Pillar:** Bias & fairness (Daniels) · **Scope:** the *data-engineering* decisions in the Piper
 pipeline that can introduce or reduce bias. We prepare ML-ready data; we don't train models here —
 and the research is clear that **most bias originates in data collection and preparation, not the
 algorithm** (Idowu et al. 2024; Biswas & Rajan 2021), and that individual preprocessing steps each

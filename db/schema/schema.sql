@@ -1,4 +1,4 @@
--- Aegis pipeline — Phase 1 schema reference (human-readable mirror of migration 0001).
+-- Piper pipeline — Phase 1 schema reference (human-readable mirror of migration 0001).
 -- The migration in db/migrations/versions/ is the source of truth; this file is for review.
 -- Phase 1 = RAW zone + provenance + quarantine. Curated zone, pseudonymisation map,
 -- consent, and RLS arrive in Phase 2/3 (see docs/06-data-model.md, docs/07-roadmap.md).

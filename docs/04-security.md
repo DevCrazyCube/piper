@@ -49,7 +49,7 @@ Database roles modeled on the Week 5 examples:
 | `pipeline_engineer` | write to staging/curated, read curated; **no** read on the pseudonymisation map |
 | `analyst` | read-only on curated **views** (aggregates), never raw identifiers |
 | `data_subject` | (via API) read/erase **only their own** rows — enforced by **Row-Level Security** |
-| `aegis_app` | the runtime role — NOSUPERUSER, NOBYPASSRLS (migration 0005) |
+| `piper_app` | the runtime role — NOSUPERUSER, NOBYPASSRLS (migration 0005) |
 | `auditor` / `admin` | _planned_ — not yet created |
 
 **Teachers cannot see raw sleep/HR data by default** (matches the group's privacy stance).

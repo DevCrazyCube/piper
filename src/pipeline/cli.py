@@ -1,4 +1,4 @@
-"""Aegis pipeline CLI (ADR-0010). Usage: python -m pipeline ingest <source>."""
+"""Piper pipeline CLI (ADR-0010). Usage: python -m pipeline ingest <source>."""
 
 from __future__ import annotations
 
@@ -10,12 +10,12 @@ from pipeline.ingest.pmdata import PMDataConnector
 from pipeline.ingest.uci_academics import UCIAcademicsConnector
 from pipeline.ingest.uci_performance import UCIPerformanceConnector
 
-app = typer.Typer(help="Aegis — Responsible Learning Analytics Pipeline", no_args_is_help=True)
+app = typer.Typer(help="Piper — Responsible Learning Analytics Pipeline", no_args_is_help=True)
 
 
 @app.callback()
 def main() -> None:
-    """Aegis — Responsible Learning Analytics Pipeline."""
+    """Piper — Responsible Learning Analytics Pipeline."""
     # Presence of a callback keeps subcommands (e.g. `ingest`) required.
 
 _CONNECTORS: dict[str, type[Connector]] = {
@@ -65,7 +65,7 @@ def curate(
 
 @app.command()
 def bootstrap() -> None:
-    """Set the app-role password from AEGIS_APP_PASSWORD (run as admin, after migrate)."""
+    """Set the app-role password from PIPER_APP_PASSWORD (run as admin, after migrate)."""
     from psycopg import sql
 
     from pipeline.common.config import get_settings
@@ -73,7 +73,7 @@ def bootstrap() -> None:
 
     pwd = get_settings().app_password.get_secret_value()
     if not pwd:
-        raise typer.BadParameter("AEGIS_APP_PASSWORD is not set")
+        raise typer.BadParameter("PIPER_APP_PASSWORD is not set")
     user = get_settings().app_user
     with pg_admin_connection() as conn, conn.cursor() as cur:
         cur.execute(sql.SQL("ALTER ROLE {} WITH LOGIN PASSWORD {}").format(

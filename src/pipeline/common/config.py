@@ -14,19 +14,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="AEGIS_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_prefix="PIPER_", env_file=".env", extra="ignore")
 
     db_host: str = "db"
     db_port: int = 5432
-    db_name: str = "aegis"
+    db_name: str = "piper"
 
     # Admin/superuser creds — used ONLY for migrations + role bootstrap.
-    db_user: str = "aegis"
+    db_user: str = "piper"
     db_password: SecretStr = SecretStr("")
 
     # Runtime application role — NOSUPERUSER, NOBYPASSRLS (so RLS actually applies).
     # Falls back to the admin user only if no app password is configured.
-    app_user: str = "aegis_app"
+    app_user: str = "piper_app"
     app_password: SecretStr = SecretStr("")
 
     # Base64-encoded 32-byte AES-256 master key; per-purpose subkeys are HKDF-derived.

@@ -58,19 +58,19 @@ class Cipher:
 def _master_key() -> bytes:
     raw = get_settings().master_key.get_secret_value()
     if not raw:
-        raise ConfigError("AEGIS_MASTER_KEY is not set (see .env.example to generate one)")
+        raise ConfigError("PIPER_MASTER_KEY is not set (see .env.example to generate one)")
     try:
         key = base64.b64decode(raw)
     except (ValueError, binascii.Error) as exc:
-        raise ConfigError("AEGIS_MASTER_KEY is not valid base64") from exc
+        raise ConfigError("PIPER_MASTER_KEY is not valid base64") from exc
     if len(key) != 32:
-        raise ConfigError("AEGIS_MASTER_KEY must decode to 32 bytes")
+        raise ConfigError("PIPER_MASTER_KEY must decode to 32 bytes")
     return key
 
 
 def _derive_key(purpose: str) -> bytes:
     """HKDF-SHA256 subkey for a purpose label — separates identity/device/receipt keys."""
-    return HKDF(algorithm=SHA256(), length=32, salt=None, info=f"aegis:{purpose}".encode()).derive(
+    return HKDF(algorithm=SHA256(), length=32, salt=None, info=f"piper:{purpose}".encode()).derive(
         _master_key()
     )
 
@@ -82,7 +82,7 @@ def get_cipher(purpose: str = "identity") -> Cipher:
 
 
 def aad_for(purpose: str) -> bytes:
-    return f"aegis:{purpose}".encode()
+    return f"piper:{purpose}".encode()
 
 
 def receipt_mac(payload: object) -> str:

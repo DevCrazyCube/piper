@@ -54,7 +54,7 @@ real identity (name, email, device id)        surrogate key
 
 ## 4. Row-Level Security (RLS)
 - **FORCE RLS** on all curated subject tables; a `data_subject` session sees only rows where
-  `subject_pid = current_setting('aegis.subject_pid')`. The app runs as a NOSUPERUSER role so RLS
+  `subject_pid = current_setting('piper.subject_pid')`. The app runs as a NOSUPERUSER role so RLS
   is genuinely enforced (migration 0005).
 - **Consent is enforced separately** (not inside the RLS predicate): revoking a scope deletes that
   scope's curated data (`process/consent.py`), which is simpler and stronger than encoding a

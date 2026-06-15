@@ -1,4 +1,4 @@
-# Aegis pipeline — common flows (ADR-0010: CLI + Make, no heavyweight orchestrator).
+# Piper pipeline — common flows (ADR-0010: CLI + Make, no heavyweight orchestrator).
 .PHONY: help up down logs build migrate shell ingest ingest-pmdata ingest-uci-perf \
         ingest-uci-academics ingest-food lint test sast audit check
 

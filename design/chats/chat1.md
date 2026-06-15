@@ -7,7 +7,7 @@ _Started 2026-06-13 17:14 UTC_
 ## User
 
 <system-info comment="Only acknowledge these if relevant">
-Project title is now "Aegis"
+Project title is now "Piper"
 Project is currently empty (no files)
 Current date is now June 13, 2026
 </system-info>
@@ -56,7 +56,7 @@ cohesive, and craft real components, not template filler.
   reduced-motion, never color-only). **Privacy:** never show raw identifiers — pseudonymous IDs + aggregates.
 
 ## 1. The product
-"**Aegis**" — a dashboard for a Responsible Learning Analytics Pipeline. It ingests sensitive personal
+"**Piper**" — a dashboard for a Responsible Learning Analytics Pipeline. It ingests sensitive personal
 data (sleep, heart rate, activity, meals) + institutional data (grades, attendance), then cleans,
 normalizes, pseudonymises, encrypts, and stores it. Built security-first / privacy-by-design (GDPR,
 ISO 27001). The dashboard is mission-control: *see the pipeline live, trust how it handles data.*
@@ -220,7 +220,7 @@ This project uses Design Components: every design is a single streaming `Name.dc
 
 _[tool: questions_v2]_
 
-This is a meaty, well-specified brief — "Aegis," a security/privacy mission-control dashboard with a neon-cyber dark-void / liquid-glass identity and GSAP motion, all six pages built distinctly. The brief deliberately leaves the exact visual values to me, so before I commit the system I want your input on a few aesthetic forks that are hard to reverse later.
+This is a meaty, well-specified brief — "Piper," a security/privacy mission-control dashboard with a neon-cyber dark-void / liquid-glass identity and GSAP motion, all six pages built distinctly. The brief deliberately leaves the exact visual values to me, so before I commit the system I want your input on a few aesthetic forks that are hard to reverse later.
 
 ## User
 
@@ -514,7 +514,7 @@ Let me confirm the overview still renders cleanly (no regressions) after all the
 
 _[tool: update_todos]_
 
-All six pages are built, distinct, and verified — the access-denied state above is the live analyst view. Marking complete and handing off (the fresh load resets to the default Data-engineer Overview).**Aegis** is built — a full security-first RLA pipeline mission-control console, all six pages distinct and composed from a consistent liquid-glass / neon-cyber kit on the drifting-aurora void.
+All six pages are built, distinct, and verified — the access-denied state above is the live analyst view. Marking complete and handing off (the fresh load resets to the default Data-engineer Overview).**Piper** is built — a full security-first RLA pipeline mission-control console, all six pages distinct and composed from a consistent liquid-glass / neon-cyber kit on the drifting-aurora void.
 
 - **Overview** — the living 8-stage pipeline is the hero: glass stage nodes, traveling cyan pulses along connectors, breathing active nodes, count-up KPIs, recent runs + ingest health + event ticker.
 - **Runs** — operational DataTable (sortable, filterable, paginated, density-aware) with a run-detail drawer: stage-by-stage timeline, lineage, errors, and an audited quarantine drill-down.
@@ -529,7 +529,7 @@ A couple of notes: the live audit stream pauses while the tab is backgrounded (r
 
 _[tool: done]_
 
-Clean load, no console errors, and the background verifier is running. Aegis is ready to explore — start on the Overview to watch the pipeline breathe, then use the left nav (and the **Viewing as** role switcher in the header) to move through Runs, Sources, Analytics, Security & audit, and Consent. Let me know what you'd like to refine — palette intensity, motion pacing, specific page layouts, or wiring up real data shapes.
+Clean load, no console errors, and the background verifier is running. Piper is ready to explore — start on the Overview to watch the pipeline breathe, then use the left nav (and the **Viewing as** role switcher in the header) to move through Runs, Sources, Analytics, Security & audit, and Consent. Let me know what you'd like to refine — palette intensity, motion pacing, specific page layouts, or wiring up real data shapes.
 
 ## User
 

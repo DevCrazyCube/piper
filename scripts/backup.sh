@@ -6,14 +6,14 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 set -a; . ./.env; set +a
-: "${AEGIS_DB_USER:?}" "${AEGIS_DB_NAME:?}"
-PASS="${AEGIS_BACKUP_PASSPHRASE:-$AEGIS_MASTER_KEY}"   # prefer a dedicated backup key
+: "${PIPER_DB_USER:?}" "${PIPER_DB_NAME:?}"
+PASS="${PIPER_BACKUP_PASSPHRASE:-$PIPER_MASTER_KEY}"   # prefer a dedicated backup key
 
 mkdir -p backups
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
-OUT="backups/aegis-${TS}.sql.gz.enc"
+OUT="backups/piper-${TS}.sql.gz.enc"
 
-docker compose exec -T db pg_dump -U "$AEGIS_DB_USER" -d "$AEGIS_DB_NAME" \
+docker compose exec -T db pg_dump -U "$PIPER_DB_USER" -d "$PIPER_DB_NAME" \
   | gzip \
   | openssl enc -aes-256-cbc -salt -pbkdf2 -pass "pass:${PASS}" -out "$OUT"
 

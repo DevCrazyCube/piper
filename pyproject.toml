@@ -1,5 +1,5 @@
 [project]
-name = "aegis-pipeline"
+name = "piper-pipeline"
 version = "0.1.0"
 description = "Responsible Learning Analytics Pipeline — security-first data engineering (PR10)"
 requires-python = ">=3.12"
@@ -31,7 +31,7 @@ dev = [
 ]
 
 [project.scripts]
-aegis = "pipeline.cli:app"
+piper = "pipeline.cli:app"
 
 [build-system]
 requires = ["setuptools>=68"]

@@ -28,7 +28,7 @@ cohesive, and craft real components, not template filler.
   reduced-motion, never color-only). **Privacy:** never show raw identifiers — pseudonymous IDs + aggregates.
 
 ## 1. The product
-"**Aegis**" — a dashboard for a Responsible Learning Analytics Pipeline. It ingests sensitive personal
+"**Piper**" — a dashboard for a Responsible Learning Analytics Pipeline. It ingests sensitive personal
 data (sleep, heart rate, activity, meals) + institutional data (grades, attendance), then cleans,
 normalizes, pseudonymises, encrypts, and stores it. Built security-first / privacy-by-design (GDPR,
 ISO 27001). The dashboard is mission-control: *see the pipeline live, trust how it handles data.*

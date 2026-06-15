@@ -1,7 +1,7 @@
-# Data Security Policy — Aegis Learning Analytics Pipeline
+# Data Security Policy — Piper Learning Analytics Pipeline
 
 **Owner:** Joyren (Security pillar) · **Project:** PR10 Data Engineering group project
-**Scope:** the full data lifecycle of the Aegis pipeline (ingest → delete)
+**Scope:** the full data lifecycle of the Piper pipeline (ingest → delete)
 **Frameworks:** GDPR (EU 2016/679), ISO/IEC 27001, EU Data Act, and the **DELICATE** checklist
 **Status:** controls are *implemented and exercised on the live stack* unless marked **_planned_**
 or **_deployment step_**. "Verified" means demonstrated by a command/test in this session, not a
@@ -60,7 +60,7 @@ Mapped to the **CIA triad** and **AAA model** (Week 5):
 | Encryption at rest (bulk) | host-volume encryption (LUKS) — community PG has no TDE | **_deployment step_**, not configured in-repo (ADR-0008) |
 | Encryption at rest (sensitive) | **AES-256-GCM app-layer**, HKDF **purpose-separated keys** + AAD | `common/crypto.py`, `id.subject` — separate keys for identity/device/receipt |
 | Authentication | webhook **API key + HMAC + nonce (DB-backed replay) + timestamp window**; per-device secret AES-encrypted | `api/auth.py`, `api/app.py` — verified: tamper/replay/stale → generic 401 |
-| Authorisation (RBAC) | app runs as **NOSUPERUSER `aegis_app`** (no RLS bypass); demo roles least-privilege | migration 0005 — verified `rolsuper=f, rolbypassrls=f` |
+| Authorisation (RBAC) | app runs as **NOSUPERUSER `piper_app`** (no RLS bypass); demo roles least-privilege | migration 0005 — verified `rolsuper=f, rolbypassrls=f` |
 | Row-level security | **FORCE RLS on all 4 curated subject tables**; subject sees only own rows; analyst = aggregate view only | migrations 0002/0005 — verified isolation under the app role |
 | Accounting (logging) | append-only audit log + triggers; anomaly view; engineers cannot write audit/receipts | `meta.audit_log`, migration 0005 |
 | Integrity | parameterised SQL (`sql.Identifier`), pydantic validation, content-hash idempotency, FK/PK | `ingest/base.py`, `process/erase.py` |

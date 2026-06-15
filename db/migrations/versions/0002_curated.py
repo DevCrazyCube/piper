@@ -167,17 +167,17 @@ def upgrade() -> None:
 
     # --- RLS + roles scaffold (Week 5 AAA; ADR-0006) ----------------------------------
     # Roles are NOLOGIN demonstrators; the app connects as owner (bypasses RLS to curate).
-    op.execute("DO $$ BEGIN CREATE ROLE aegis_analyst NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$")
-    op.execute("DO $$ BEGIN CREATE ROLE aegis_subject NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$")
+    op.execute("DO $$ BEGIN CREATE ROLE piper_analyst NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$")
+    op.execute("DO $$ BEGIN CREATE ROLE piper_subject NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$")
 
     # data_subject can see ONLY their own rows (RLS by session-set pid).
     op.execute("ALTER TABLE curated.timeseries ENABLE ROW LEVEL SECURITY")
     op.execute(
-        "CREATE POLICY subject_isolation ON curated.timeseries FOR SELECT TO aegis_subject "
-        "USING (subject_pid::text = current_setting('aegis.subject_pid', true))"
+        "CREATE POLICY subject_isolation ON curated.timeseries FOR SELECT TO piper_subject "
+        "USING (subject_pid::text = current_setting('piper.subject_pid', true))"
     )
-    op.execute("GRANT USAGE ON SCHEMA curated TO aegis_subject, aegis_analyst")
-    op.execute("GRANT SELECT ON curated.timeseries TO aegis_subject")
+    op.execute("GRANT USAGE ON SCHEMA curated TO piper_subject, piper_analyst")
+    op.execute("GRANT SELECT ON curated.timeseries TO piper_subject")
 
     # analyst gets aggregate-only views, never the base table (no identifiers).
     op.execute(
@@ -192,7 +192,7 @@ def upgrade() -> None:
         GROUP BY 1, 2
         """
     )
-    op.execute("GRANT SELECT ON curated.v_daily_active_minutes TO aegis_analyst")
+    op.execute("GRANT SELECT ON curated.v_daily_active_minutes TO piper_analyst")
 
 
 def downgrade() -> None:
@@ -201,5 +201,5 @@ def downgrade() -> None:
     op.execute("DROP SCHEMA IF EXISTS consent CASCADE")
     op.execute("DROP SCHEMA IF EXISTS id CASCADE")
     op.execute("DROP TABLE IF EXISTS meta.decision")
-    op.execute("DROP ROLE IF EXISTS aegis_analyst")
-    op.execute("DROP ROLE IF EXISTS aegis_subject")
+    op.execute("DROP ROLE IF EXISTS piper_analyst")
+    op.execute("DROP ROLE IF EXISTS piper_subject")

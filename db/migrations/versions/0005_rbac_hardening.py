@@ -5,9 +5,9 @@ Revises: 0004
 Create Date: 2026-06-15
 
 Audit remediation:
-- The app previously connected as the superuser `aegis`, which BYPASSES RLS — making the
-  whole access-control layer decorative. Introduce a NOSUPERUSER/NOBYPASSRLS `aegis_app`
-  login role for runtime; migrations still run as `aegis`.
+- The app previously connected as the superuser `piper`, which BYPASSES RLS — making the
+  whole access-control layer decorative. Introduce a NOSUPERUSER/NOBYPASSRLS `piper_app`
+  login role for runtime; migrations still run as `piper`.
 - FORCE ROW LEVEL SECURITY + policies on every curated subject table (was 1 of 4).
 - Replay nonce store moved to the DB (was in-process only).
 - Engineers can no longer write the audit log / deletion receipts (audit integrity).
@@ -26,7 +26,7 @@ _SUBJECT_TABLES = ("timeseries", "sleep", "wellness", "meal")
 
 def upgrade() -> None:
     op.execute(
-        "DO $$ BEGIN CREATE ROLE aegis_app LOGIN NOSUPERUSER NOBYPASSRLS; "
+        "DO $$ BEGIN CREATE ROLE piper_app LOGIN NOSUPERUSER NOBYPASSRLS; "
         "EXCEPTION WHEN duplicate_object THEN NULL; END $$"
     )
 
@@ -38,17 +38,17 @@ def upgrade() -> None:
 
     # Grants to the runtime role (least privilege: no DDL, no superuser).
     for schema in ("raw", "curated", "meta", "id", "consent"):
-        op.execute(f"GRANT USAGE ON SCHEMA {schema} TO aegis_app")
-        op.execute(f"GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA {schema} TO aegis_app")
-        op.execute(f"GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA {schema} TO aegis_app")
-        # Future tables created by aegis in these schemas.
+        op.execute(f"GRANT USAGE ON SCHEMA {schema} TO piper_app")
+        op.execute(f"GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA {schema} TO piper_app")
+        op.execute(f"GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA {schema} TO piper_app")
+        # Future tables created by piper in these schemas.
         op.execute(
-            f"ALTER DEFAULT PRIVILEGES FOR ROLE aegis IN SCHEMA {schema} "
-            "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO aegis_app"
+            f"ALTER DEFAULT PRIVILEGES FOR ROLE piper IN SCHEMA {schema} "
+            "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO piper_app"
         )
         op.execute(
-            f"ALTER DEFAULT PRIVILEGES FOR ROLE aegis IN SCHEMA {schema} "
-            "GRANT USAGE, SELECT ON SEQUENCES TO aegis_app"
+            f"ALTER DEFAULT PRIVILEGES FOR ROLE piper IN SCHEMA {schema} "
+            "GRANT USAGE, SELECT ON SEQUENCES TO piper_app"
         )
     # The app role must NOT read the pseudonymisation map? It must, to join/pseudonymise.
     # Engineers/analysts/subjects still cannot (no grants on schema id for them).
@@ -58,19 +58,19 @@ def upgrade() -> None:
         op.execute(f"ALTER TABLE curated.{tbl} ENABLE ROW LEVEL SECURITY")
         op.execute(f"ALTER TABLE curated.{tbl} FORCE ROW LEVEL SECURITY")
         op.execute(
-            f"DO $$ BEGIN CREATE POLICY app_all ON curated.{tbl} TO aegis_app "
+            f"DO $$ BEGIN CREATE POLICY app_all ON curated.{tbl} TO piper_app "
             "USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$"
         )
         op.execute(
             f"DO $$ BEGIN CREATE POLICY subject_isolation ON curated.{tbl} FOR SELECT "
-            "TO aegis_subject USING (subject_pid::text = current_setting('aegis.subject_pid', true)); "
+            "TO piper_subject USING (subject_pid::text = current_setting('piper.subject_pid', true)); "
             "EXCEPTION WHEN duplicate_object THEN NULL; END $$"
         )
-        op.execute(f"GRANT SELECT ON curated.{tbl} TO aegis_subject")
+        op.execute(f"GRANT SELECT ON curated.{tbl} TO piper_subject")
 
     # Audit integrity: the audited party (engineer) must not write audit/receipt rows.
-    op.execute("REVOKE INSERT ON meta.audit_log FROM aegis_engineer")
-    op.execute("REVOKE INSERT, SELECT ON meta.deletion_receipt FROM aegis_engineer")
+    op.execute("REVOKE INSERT ON meta.audit_log FROM piper_engineer")
+    op.execute("REVOKE INSERT, SELECT ON meta.deletion_receipt FROM piper_engineer")
 
 
 def downgrade() -> None:

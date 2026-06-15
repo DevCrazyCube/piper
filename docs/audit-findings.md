@@ -7,7 +7,7 @@ the codebase by four independent reviewers. This records the findings and what w
 ## Critical
 | # | Finding | Status |
 |---|---|---|
-| C1 | App connected as a Postgres **superuser → RLS bypassed** (access control void) | **Fixed** — migration 0005 adds NOSUPERUSER/NOBYPASSRLS `aegis_app`; runtime connects as it (`bootstrap`); FORCE RLS + policies on all 4 curated subject tables. Verified `rolsuper=f`. |
+| C1 | App connected as a Postgres **superuser → RLS bypassed** (access control void) | **Fixed** — migration 0005 adds NOSUPERUSER/NOBYPASSRLS `piper_app`; runtime connects as it (`bootstrap`); FORCE RLS + policies on all 4 curated subject tables. Verified `rolsuper=f`. |
 | C2 | `curate_academic` **not idempotent** — re-run doubled the data | **Fixed** — delete-by-origin before insert; verified re-runs stable. |
 | C3 | Hourly rollup **mis-aggregated daily-total** active-minutes | **Fixed** — split grain: intraday→hour, daily-total metrics→day. Verified active-minutes now 100% day-grain. |
 | C4 | Pseudonymisation map stored `source_local_id` **in plaintext** next to ciphertext | **Mitigated/Documented** — schema `id` is app-role-only (engineers/analysts/subjects denied); kept plaintext source id for joins is standard pseudonymisation, and the doc now states this honestly (protection = schema access control, not the key alone). Blind-index refactor deferred (pNN data, would force pgcrypto). |
