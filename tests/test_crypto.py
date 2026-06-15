@@ -9,7 +9,14 @@ os.environ.setdefault("AEGIS_MASTER_KEY", "")  # avoid .env dependency at import
 try:
     from cryptography.exceptions import InvalidTag
 
-    from pipeline.common.crypto import Cipher, content_hash, sha256_hex
+    from pipeline.common.crypto import (
+        Cipher,
+        aad_for,
+        content_hash,
+        get_cipher,
+        receipt_mac,
+        sha256_hex,
+    )
     from pipeline.common.errors import ConfigError
     _HAVE = True
 except Exception:
@@ -48,6 +55,31 @@ class TestCrypto(unittest.TestCase):
 
     def test_sha256_hex(self) -> None:
         self.assertEqual(len(sha256_hex(b"x")), 64)
+
+    def test_content_hash_decimal_canonical(self) -> None:
+        from decimal import Decimal
+        self.assertEqual(content_hash({"a": Decimal("1.50")}), content_hash({"a": Decimal("1.5")}))
+
+
+@unittest.skipUnless(_HAVE, "crypto/settings deps not installed")
+class TestKeySeparation(unittest.TestCase):
+    """Purpose-separated keys (ADR-0008 hardening): one purpose can't decrypt another's."""
+
+    def test_purposes_have_distinct_keys(self) -> None:
+        token = get_cipher("identity").encrypt(b"p01", aad_for("identity"))
+        with self.assertRaises(InvalidTag):
+            get_cipher("device").decrypt(token, aad_for("device"))
+
+    def test_aad_mismatch_fails(self) -> None:
+        token = get_cipher("identity").encrypt(b"p01", aad_for("identity"))
+        with self.assertRaises(InvalidTag):
+            get_cipher("identity").decrypt(token, aad_for("device"))
+
+    def test_receipt_mac_is_keyed_and_deterministic(self) -> None:
+        payload = {"subject_pid": "x", "counts": {"a": 1}}
+        self.assertEqual(receipt_mac(payload), receipt_mac(payload))
+        # keyed HMAC != a bare content hash
+        self.assertNotEqual(receipt_mac(payload), content_hash(payload))
 
 
 if __name__ == "__main__":

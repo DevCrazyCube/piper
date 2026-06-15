@@ -53,9 +53,13 @@ real identity (name, email, device id)        surrogate key
 > same file/payload **upserts**, never duplicates. Webhook events carry a device + event-id idempotency key.
 
 ## 4. Row-Level Security (RLS)
-- `subject`-scoped tables enable RLS so a `data_subject` session can only see/erase rows where
-  `subject_pid = current_subject()` **and** an active `consent` row covers the purpose.
-- `analyst` sees only aggregate **views**; RLS + view definitions prevent identifier leakage.
+- **FORCE RLS** on all curated subject tables; a `data_subject` session sees only rows where
+  `subject_pid = current_setting('aegis.subject_pid')`. The app runs as a NOSUPERUSER role so RLS
+  is genuinely enforced (migration 0005).
+- **Consent is enforced separately** (not inside the RLS predicate): revoking a scope deletes that
+  scope's curated data (`process/consent.py`), which is simpler and stronger than encoding a
+  metric→scope join into every policy.
+- `analyst` sees only aggregate **views**; base subject tables are not granted to it.
 
 ## 5. Time-series design (TimescaleDB)
 - `heart_rate`, `sleep`, `activity` are **hypertables** chunked by time → fast range scans +

@@ -19,30 +19,47 @@ class Settings(BaseSettings):
     db_host: str = "db"
     db_port: int = 5432
     db_name: str = "aegis"
+
+    # Admin/superuser creds — used ONLY for migrations + role bootstrap.
     db_user: str = "aegis"
     db_password: SecretStr = SecretStr("")
 
-    # Base64-encoded 32-byte AES-256 key for application-layer field encryption.
+    # Runtime application role — NOSUPERUSER, NOBYPASSRLS (so RLS actually applies).
+    # Falls back to the admin user only if no app password is configured.
+    app_user: str = "aegis_app"
+    app_password: SecretStr = SecretStr("")
+
+    # Base64-encoded 32-byte AES-256 master key; per-purpose subkeys are HKDF-derived.
     master_key: SecretStr = SecretStr("")
 
     datasets_dir: Path = Path("/data/datasets")
     log_level: str = "INFO"
 
-    @property
-    def sqlalchemy_dsn(self) -> str:
-        pwd = self.db_password.get_secret_value()
+    def _dsn(self, user: str, pwd: str) -> str:
+        return f"postgresql+psycopg://{user}:{pwd}@{self.db_host}:{self.db_port}/{self.db_name}"
+
+    def _conninfo(self, user: str, pwd: str) -> str:
         return (
-            f"postgresql+psycopg://{self.db_user}:{pwd}"
-            f"@{self.db_host}:{self.db_port}/{self.db_name}"
+            f"host={self.db_host} port={self.db_port} dbname={self.db_name} "
+            f"user={user} password={pwd}"
         )
 
     @property
+    def sqlalchemy_dsn(self) -> str:
+        """Admin DSN — used by Alembic (migrations need superuser: extensions, roles)."""
+        return self._dsn(self.db_user, self.db_password.get_secret_value())
+
+    @property
+    def admin_conninfo(self) -> str:
+        return self._conninfo(self.db_user, self.db_password.get_secret_value())
+
+    @property
     def psycopg_conninfo(self) -> str:
-        pwd = self.db_password.get_secret_value()
-        return (
-            f"host={self.db_host} port={self.db_port} dbname={self.db_name} "
-            f"user={self.db_user} password={pwd}"
-        )
+        """Runtime DSN — the non-superuser app role when configured, else admin fallback."""
+        app_pwd = self.app_password.get_secret_value()
+        if app_pwd:
+            return self._conninfo(self.app_user, app_pwd)
+        return self.admin_conninfo
 
 
 @lru_cache

@@ -19,8 +19,22 @@ def get_engine() -> Engine:
 
 @contextmanager
 def pg_connection() -> Iterator[psycopg.Connection]:
-    """A raw psycopg connection (committed on clean exit, rolled back on error)."""
+    """Runtime connection as the non-superuser app role (committed on clean exit)."""
     conn = psycopg.connect(get_settings().psycopg_conninfo)
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@contextmanager
+def pg_admin_connection() -> Iterator[psycopg.Connection]:
+    """Admin (superuser) connection — only for role bootstrap / privileged ops."""
+    conn = psycopg.connect(get_settings().admin_conninfo)
     try:
         yield conn
         conn.commit()

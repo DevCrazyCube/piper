@@ -10,7 +10,7 @@ from uuid import UUID
 
 import psycopg
 
-from pipeline.common.crypto import Cipher
+from pipeline.common.crypto import Cipher, aad_for
 
 
 def get_or_create_subject(
@@ -23,7 +23,7 @@ def get_or_create_subject(
     row = cur.fetchone()
     if row is not None:
         return row[0]
-    enc = cipher.encrypt(local_id.encode())
+    enc = cipher.encrypt(local_id.encode(), aad_for("identity"))
     cur.execute(
         "INSERT INTO id.subject (source, source_local_id, enc_identity) "
         "VALUES (%s, %s, %s) RETURNING subject_pid",

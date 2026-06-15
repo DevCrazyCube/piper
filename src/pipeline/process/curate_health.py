@@ -17,7 +17,7 @@ _SCOPES = ("sleep", "heart_rate", "activity", "meals")
 
 
 def curate_pmdata(conn: psycopg.Connection) -> dict[str, int]:
-    cipher = get_cipher()
+    cipher = get_cipher("identity")
     counts: dict[str, int] = {}
     with conn.cursor() as cur:
         # 1) pseudonymise every participant + seed consent (default granted) ------------
@@ -35,30 +35,45 @@ def curate_pmdata(conn: psycopg.Connection) -> dict[str, int]:
                 )
         counts["subjects"] = len(participants)
 
-        # 2) curated time-series = HOURLY rollups keyed by pseudonymous subject.
-        # We deliberately do NOT copy the ~21M per-second heart-rate points verbatim:
-        # curated data is analytics-ready and aggregate-by-design (smaller, privacy-friendly).
-        # heart_rate -> hourly mean; cumulative metrics (steps/calories/distance/active) -> hourly sum.
+        # 2) curated time-series rollups keyed by pseudonymous subject. We do NOT copy the
+        # ~21M per-second points verbatim — curated is aggregate-by-design. CRITICAL: the
+        # *_active_minutes / sedentary_minutes metrics are already DAILY TOTALS in PMData
+        # (one record/day), so they must bucket at 1 DAY, not 1 hour. Genuinely intraday
+        # metrics (heart_rate, steps, calories, distance) bucket at 1 hour.
         cur.execute(
             """
             INSERT INTO curated.timeseries (subject_pid, metric, ts, value)
-            SELECT s.subject_pid,
-                   r.metric,
-                   time_bucket('1 hour', r.ts) AS ts,
+            SELECT s.subject_pid, r.metric, time_bucket('1 hour', r.ts) AS ts,
                    CASE WHEN r.metric = 'heart_rate' THEN avg(r.value) ELSE sum(r.value) END
             FROM raw.timeseries r
             JOIN id.subject s ON s.source='pmdata' AND s.source_local_id = r.participant
+            WHERE r.metric IN ('heart_rate','steps','calories','distance')
             GROUP BY s.subject_pid, r.metric, time_bucket('1 hour', r.ts)
             ON CONFLICT (subject_pid, metric, ts) DO NOTHING
             """
         )
-        counts["timeseries"] = cur.rowcount
+        ts_intraday = cur.rowcount
+        cur.execute(
+            """
+            INSERT INTO curated.timeseries (subject_pid, metric, ts, value)
+            SELECT s.subject_pid, r.metric, time_bucket('1 day', r.ts) AS ts, sum(r.value)
+            FROM raw.timeseries r
+            JOIN id.subject s ON s.source='pmdata' AND s.source_local_id = r.participant
+            WHERE r.metric IN ('lightly_active_minutes','moderately_active_minutes',
+                               'very_active_minutes','sedentary_minutes')
+            GROUP BY s.subject_pid, r.metric, time_bucket('1 day', r.ts)
+            ON CONFLICT (subject_pid, metric, ts) DO NOTHING
+            """
+        )
+        counts["timeseries"] = ts_intraday + cur.rowcount
         log_decision(
             cur, stage="curate", source="pmdata",
-            decision="curated time-series as HOURLY rollups, not verbatim per-second copy",
-            rationale="21M raw HR points -> hourly aggregates: analytics-ready, far smaller, "
-                      "and aggregate-by-design supports privacy. HR=mean, cumulative=sum.",
-            detail={"hr_agg": "mean", "cumulative_agg": "sum", "bucket": "1 hour"},
+            decision="time-series rollups by metric grain (intraday->hour, daily-total->day)",
+            rationale="active-minute metrics are daily totals in PMData; bucketing them hourly "
+                      "would mislabel the grain. HR=hourly mean; steps/cal/dist=hourly sum.",
+            detail={"hourly": ["heart_rate", "steps", "calories", "distance"],
+                    "daily": ["lightly_active_minutes", "moderately_active_minutes",
+                              "very_active_minutes", "sedentary_minutes"]},
         )
 
         # 3) structured records from the raw zone --------------------------------------

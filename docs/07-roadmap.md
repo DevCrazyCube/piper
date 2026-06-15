@@ -74,6 +74,16 @@
 - [ ] Confirm aesthetic direction with the user FIRST
 - [ ] Dashboard: pipeline runs, query results, consent state, audit log — over the existing API
 
+## Audit & remediation  ✅ (2026-06-15)
+- [x] 4-dimension independent audit (architecture / quality / security / compliance-vs-docs)
+- [x] Critical fixes: non-superuser app role + FORCE RLS (was bypassed); academic idempotency;
+      time-series grain; HKDF key separation + AAD
+- [x] High fixes: consent enforcement, DB-backed replay nonce, data export (Art.15/20),
+      canonical content-hash, keyed deletion receipt, engineer audit lockdown, k-anon on all queries
+- [x] Doc honesty pass (removed/flagged pgcrypto, Argon2id, MFA, TLS-in-place, "incl. backups")
+- [x] Findings + status recorded in `docs/audit-findings.md`
+- [ ] Deferred: shared upsert/`Curator` refactor, per-batch commits, dedicated backup key, gateway rate-limit
+
 ## Cross-cutting (every phase)
 - Update `docs/` + add an ADR for any significant decision.
 - Keep `claude/PROJECT_CONTEXT.md` current.

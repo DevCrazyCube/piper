@@ -3,8 +3,13 @@
 PMData alone mixes: '2019-11-01 00:00:08' (naive, space), '...T10:15:00.000' (ISO, no tz),
 '2019-11-01T10:15:00Z' / '2019-11-15T09:10:38.176Z' (ISO + Z), and the meal log uses
 '14/11/2019' / '14/11/2019 23:38:28' (DD/MM/YYYY). Open Food Facts adds UNIX epochs.
-Everything is normalized to a timezone-aware UTC datetime; unparseable values raise
-ValueError so the caller can quarantine them rather than guess.
+Everything is normalized to a timezone-aware UTC datetime; values with no recognizable
+format raise ValueError so the caller can quarantine them.
+
+CAVEAT: slash dates are assumed **day-first** (DD/MM/YYYY — correct for the PMData meal
+log, which is European). An ambiguous value like '02/03/2019' is therefore read as
+2 March, not 2 February — it does NOT raise. Only use this on day-first sources; a
+month-first source would need its own parser/flag.
 """
 
 from __future__ import annotations

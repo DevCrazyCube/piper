@@ -20,7 +20,12 @@
 
 | Pillar | Technical controls in this pipeline |
 |---|---|
-| **Confidentiality** | TLS in transit; encryption at rest; `pgcrypto` field encryption; RBAC + Row-Level Security; pseudonymisation; least privilege |
+> **Post-audit note (2026-06-15):** this is the security *design* doc. For the authoritative
+> implemented-vs-planned status see **`docs/security-policy.md`**. Notably: `pgcrypto` was
+> **rejected** in favour of app-layer AES (ADR-0008); Argon2id/MFA/`auditor`+`admin` roles and TLS
+> are **not implemented** (no human-credential surface exists) — they describe intent, not current state.
+
+| **Confidentiality** | TLS in transit _(planned)_; encryption at rest; **app-layer AES-256-GCM** field encryption; RBAC + Row-Level Security; pseudonymisation; least privilege |
 | **Integrity** | Parameterised queries; pydantic validation at ingest; DB constraints + FK; hash/checksum on raw payloads; append-only audit log; 4-eyes on migrations |
 | **Availability** | 3-2-1 backups; defined RPO/RTO; health checks; (optional) replication; resource limits to resist resource-exhaustion |
 
@@ -29,7 +34,9 @@
 ### Authentication
 - Webhook clients authenticate with a **per-device API key/token** (rotatable, scoped), and sign
   each payload with an **HMAC + timestamp + nonce** so replays and tampered bodies are rejected.
-- Human/admin access: strong credentials hashed with **Argon2id**; **MFA** for any admin path.
+- _Planned (not implemented):_ human/admin access with **Argon2id**-hashed credentials + **MFA**.
+  There is currently **no human-credential surface** — the only authenticated path is the per-device
+  webhook HMAC. Argon2id/MFA apply once an admin/login UI exists.
 - Secrets via **`.env` (dev)** → docker secrets (never in code, never committed).
 - Principle: **length over complexity**, no reuse, rotation without predictable patterns
   (per the slide).
@@ -42,8 +49,8 @@ Database roles modeled on the Week 5 examples:
 | `pipeline_engineer` | write to staging/curated, read curated; **no** read on the pseudonymisation map |
 | `analyst` | read-only on curated **views** (aggregates), never raw identifiers |
 | `data_subject` | (via API) read/erase **only their own** rows — enforced by **Row-Level Security** |
-| `auditor` | read-only on audit logs |
-| `admin` | break-glass, MFA-gated, fully logged |
+| `aegis_app` | the runtime role — NOSUPERUSER, NOBYPASSRLS (migration 0005) |
+| `auditor` / `admin` | _planned_ — not yet created |
 
 **Teachers cannot see raw sleep/HR data by default** (matches the group's privacy stance).
 Row-Level Security ties each row to a subject + consent scope so a query physically cannot

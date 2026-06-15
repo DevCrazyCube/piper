@@ -114,12 +114,11 @@ DataPipeline/
 ├── datasets/              # raw test data, multi-GB (gitignored)
 ├── src/
 │   └── pipeline/
-│       ├── ingest/        # batch connectors + webhook API
-│       ├── process/       # clean / filter / normalize / dedup / harmonise
-│       ├── privacy/       # pseudonymisation, consent, minimisation
-│       ├── store/         # DB access, migrations, models
-│       ├── analyse/       # the 5 queries
-│       └── common/        # config, logging, crypto, errors
+│       ├── ingest/        # batch connectors + run engine
+│       ├── api/           # FastAPI webhook ingest (real-time)
+│       ├── process/       # curate: clean/normalize/dedup/harmonise + pseudonymise/consent/erase/export
+│       ├── analyse/       # the 5 aggregate queries
+│       └── common/        # config, logging, crypto, db, dates, arff, errors
 ├── db/
 │   ├── migrations/        # schema migrations
 │   └── schema/            # reference schema SQL (tracked)

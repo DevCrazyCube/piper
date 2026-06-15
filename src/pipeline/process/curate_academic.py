@@ -34,6 +34,8 @@ def curate_academic(conn: psycopg.Connection) -> dict[str, int]:
 
 
 def _curate_performance(cur: psycopg.Cursor) -> int:
+    # Idempotent: clear this origin first (table has no natural unique key).
+    cur.execute("DELETE FROM curated.student_academic WHERE origin = 'uci-performance'")
     cur.execute("SELECT payload FROM raw.record WHERE source='uci-performance' AND record_type='grade'")
     records = [r[0] for r in cur.fetchall()]
 
@@ -48,11 +50,17 @@ def _curate_performance(cur: psycopg.Cursor) -> int:
     for recs in groups.values():
         g3s = [v / 20.0 for r in recs if (v := _num(r.get("G3"))) is not None]
         grade_norm = sum(g3s) / len(g3s) if g3s else None
+        # Aggregate per-student fields across mat/por rather than picking one arbitrarily.
+        study = [v for r in recs if (v := to_int(r.get("studytime"))) is not None]
+        fails = [v for r in recs if (v := to_int(r.get("failures"))) is not None]
+        abss = [v for r in recs if (v := to_int(r.get("absences"))) is not None]
         rep = recs[0]
         rows.append(
             ("uci-performance", rep.get("sex"), to_int(rep.get("age")),
-             to_int(rep.get("studytime")), to_int(rep.get("failures")),
-             to_int(rep.get("absences")), None, grade_norm,
+             max(study) if study else None,                      # study_time: highest reported
+             round(sum(fails) / len(fails)) if fails else None,  # failures: mean
+             round(sum(abss) / len(abss)) if abss else None,     # absences: mean
+             None, grade_norm,
              Json({"subjects": sorted({r.get("subject") for r in recs})}))
         )
     _insert(cur, rows)
@@ -67,6 +75,7 @@ def _curate_performance(cur: psycopg.Cursor) -> int:
 
 
 def _curate_academics(cur: psycopg.Cursor) -> int:
+    cur.execute("DELETE FROM curated.student_academic WHERE origin = 'uci-academics'")
     cur.execute("SELECT payload FROM raw.record WHERE source='uci-academics' AND record_type='academic'")
     rows = []
     unmapped = 0

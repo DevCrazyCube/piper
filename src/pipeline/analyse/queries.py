@@ -32,6 +32,7 @@ QUERIES: list[Query] = [
                round(max(active_min)::numeric, 1) AS max_day,
                count(DISTINCT subject_pid)        AS n_subjects
         FROM daily
+        HAVING count(DISTINCT subject_pid) >= %(k)s
         """,
     ),
     Query(
@@ -76,6 +77,7 @@ QUERIES: list[Query] = [
                count(*) AS n_subjects
         FROM per_subject
         WHERE avg_steps IS NOT NULL AND avg_sleep_min IS NOT NULL
+        HAVING count(*) >= %(k)s
         """,
     ),
     Query(
@@ -88,6 +90,7 @@ QUERIES: list[Query] = [
         FROM curated.student_academic
         WHERE grade_final_norm IS NOT NULL
         GROUP BY origin
+        HAVING count(*) >= %(k)s
         ORDER BY origin
         """,
     ),

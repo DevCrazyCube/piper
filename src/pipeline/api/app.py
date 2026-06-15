@@ -11,7 +11,7 @@ from fastapi import FastAPI, Header, HTTPException, Request
 
 from pipeline.api.auth import verify
 from pipeline.api.models import IngestRequest
-from pipeline.common.crypto import get_cipher
+from pipeline.common.crypto import aad_for, get_cipher
 from pipeline.common.db import pg_connection
 from pipeline.common.logging import get_logger
 from pipeline.process.pseudonymise import get_or_create_subject
@@ -34,6 +34,8 @@ async def ingest(
     x_aegis_signature: str = Header(...),
 ) -> dict[str, int | str]:
     body = await request.body()
+    # Generic 401 for the client; precise reason only in server logs (no auth oracle).
+    unauthorized = HTTPException(status_code=401, detail="unauthorized")
 
     with pg_connection() as conn, conn.cursor() as cur:
         cur.execute(
@@ -43,14 +45,24 @@ async def ingest(
         row = cur.fetchone()
         if row is None:
             log.warning("api.unknown_device", device=x_aegis_device)
-            raise HTTPException(status_code=401, detail="unknown device")
+            raise unauthorized
         enc_secret, source, source_local_id = row
-        secret = get_cipher().decrypt(bytes(enc_secret))
+        secret = get_cipher("device").decrypt(bytes(enc_secret), aad_for("device"))
 
         ok, reason = verify(secret, x_aegis_timestamp, x_aegis_nonce, body, x_aegis_signature)
         if not ok:
             log.warning("api.auth_failed", device=x_aegis_device, reason=reason)
-            raise HTTPException(status_code=401, detail=f"auth failed: {reason}")
+            raise unauthorized
+
+        # Replay protection, authoritative + cross-worker: unique-insert the nonce.
+        cur.execute(
+            "INSERT INTO meta.webhook_nonce (nonce) VALUES (%s) ON CONFLICT DO NOTHING "
+            "RETURNING nonce",
+            (x_aegis_nonce,),
+        )
+        if cur.fetchone() is None:
+            log.warning("api.replay", device=x_aegis_device)
+            raise unauthorized
 
         # Validate payload (pydantic) -> 422 on malformed.
         try:
@@ -58,9 +70,9 @@ async def ingest(
         except ValueError as exc:
             raise HTTPException(status_code=422, detail="invalid payload") from exc
         if payload.device_id != x_aegis_device:
-            raise HTTPException(status_code=400, detail="device_id mismatch")
+            raise unauthorized
 
-        pid = get_or_create_subject(cur, get_cipher(), source, source_local_id)
+        pid = get_or_create_subject(cur, get_cipher("identity"), source, source_local_id)
         rows = [
             (source, source_local_id, s.metric, s.ts, s.value, None) for s in payload.samples
         ]

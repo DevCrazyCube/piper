@@ -12,13 +12,13 @@
 | Article | Requirement | How the pipeline satisfies it |
 |---|---|---|
 | **Art. 5(1)(b)** Purpose limitation | Data used only for stated purpose | Each source documents its analytics purpose; access scoped to purpose |
-| **Art. 5(1)(c)** Data minimisation | Collect only what's necessary | Ingest loads only needed columns/metrics (esp. Open Food Facts 150+ cols → curated subset) |
+| **Art. 5(1)(c)** Data minimisation | Collect only what's necessary | Open Food Facts loads only 9 of 150+ columns; **other minimisation is applied at curation** (the raw zone intentionally retains full payloads for provenance + erasure) |
 | **Art. 5(1)(e)** Storage limitation | Defined retention | Retention windows per data class; backups included; auto-expiry plan |
 | **Art. 6** Lawful basis | Consent / legitimate interest | Consent recorded per subject + scope; institutional joins only under consent |
-| **Art. 15–20** Data subject rights | Access, rectification, portability | `data_subject` role + API can read/export own data (EU Data Act portability too) |
-| **Art. 17** Right to erasure | Delete incl. backups | Stage 08: verified erasure across curated + raw + backups; deletion receipt |
-| **Art. 25** Data protection by design & default | Privacy built in | PbD from stage 01; pseudonymisation default; RLS; minimisation |
-| **Art. 32** Security of processing | Encryption, pseudonymisation, resilience | TLS, encryption at rest, `pgcrypto`, RBAC/RLS, backups, logging (see `04-security.md`) |
+| **Art. 15–20** Data subject rights | Access, portability | `export` command → JSON (Art. 15/20); RLS-scoped subject read |
+| **Art. 17** Right to erasure | Delete | `erase`: cascade curated+raw+map+device+quarantine + keyed receipt. **Existing backups are NOT retroactively purged** — they age out under retention/rotation |
+| **Art. 25** Data protection by design & default | Privacy built in | pseudonymisation default; FORCE RLS; minimisation at curation |
+| **Art. 32** Security of processing | Encryption, pseudonymisation, resilience | app-layer AES-256-GCM (HKDF-separated keys), RBAC/RLS, backups, logging; **TLS _planned_** (see `04-security.md`) |
 
 **Special-category data note:** health/wellness data (HR, sleep, meals) is Art. 9 special
 category → stricter handling: explicit consent, minimisation, strong encryption, tight access.
