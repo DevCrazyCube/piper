@@ -14,9 +14,9 @@ export function Overview() {
       <Ribbon vitals={o.vitals} />
       <Pipeline stages={o.stages} />
 
-      <div className="grid cols-2" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid split">
         <Panel eyebrow="Operations" title="Recent runs" action={<a className="chip" href="/runs">View all</a>}>
-          <table className="dt">
+          <div className="table-wrap"><table className="dt">
             <thead><tr><th>Run</th><th>Source</th><th className="num">In → Out</th><th>Outcome</th></tr></thead>
             <tbody>
               {o.runs.slice(0, 6).map((r) => (
@@ -28,7 +28,7 @@ export function Overview() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </Panel>
 
         <Panel eyebrow="Freshness" title="Ingest health">

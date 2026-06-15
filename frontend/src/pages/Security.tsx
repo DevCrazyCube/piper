@@ -9,18 +9,19 @@ export function Security() {
   const audit = useData(api.audit, []);
   const anomalies = useData(api.anomalies, []);
   const controls = useData(api.controls, []);
+  const sum = useData(api.securitySummary, { encryption_coverage: 100, failed_access_24h: 0, audit_events_24h: 0, open_anomalies: 0 });
   const pass = controls.filter((c) => c.status === "pass").length;
 
   return (
     <div ref={ref}>
       <div className="grid cols-4" style={{ marginTop: 4 }}>
-        <Stat v={{ label: "Encryption coverage", value: "100", unit: "%", sub: "verified at rest", tone: "ok" }} />
-        <Stat v={{ label: "Failed access · 24h", value: "7", sub: "all denied & logged", tone: "warn" }} />
-        <Stat v={{ label: "Open anomalies", value: String(anomalies.length), sub: "1 medium severity", tone: "warn" }} />
-        <Stat v={{ label: "Audit events · 24h", value: "48210", sub: "append-only ledger", tone: "ok" }} />
+        <Stat v={{ label: "Encryption coverage", value: String(sum.encryption_coverage), unit: "%", sub: "verified at rest", tone: "ok" }} />
+        <Stat v={{ label: "Failed access · 24h", value: String(sum.failed_access_24h), sub: sum.failed_access_24h ? "all denied & logged" : "none denied", tone: sum.failed_access_24h ? "warn" : "ok" }} />
+        <Stat v={{ label: "Open anomalies", value: String(sum.open_anomalies), sub: sum.open_anomalies ? "awaiting review" : "none open", tone: sum.open_anomalies ? "warn" : "ok" }} />
+        <Stat v={{ label: "Audit events · 24h", value: sum.audit_events_24h.toLocaleString(), sub: "append-only ledger", tone: "ok" }} />
       </div>
 
-      <div className="grid cols-2" style={{ marginTop: 16, gridTemplateColumns: "1.6fr 1fr" }}>
+      <div className="grid split" style={{ marginTop: 16 }}>
         <Panel eyebrow="IMMUTABLE" title="Audit log stream" action={<span className="pill live">LIVE</span>}>
           <div className="log">
             <div className="row" style={{ color: "var(--text-faint)", fontSize: 10 }}><span>TIME</span><span>ACTION</span><span>RESOURCE</span><span>ACTOR</span><span>RESULT</span></div>

@@ -19,7 +19,7 @@ export function Sources() {
         </Panel>
       )}
 
-      <div className="section-title">7 ingest streams & datasets</div>
+      <div className="section-title">{sources.length} ingest streams & datasets</div>
       <div className="grid cols-4">
         {sources.map((s) => (
           <div key={s.name} className={`glass panel ${s.sla === "drift" ? "" : ""}`} data-anim style={{ borderColor: s.sla !== "ok" ? (s.sla === "risk" ? "rgba(245,179,66,0.3)" : "rgba(245,96,77,0.3)") : undefined }}>

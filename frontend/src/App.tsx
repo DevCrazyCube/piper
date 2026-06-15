@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 import { Overview } from "./pages/Overview";
 import { Runs } from "./pages/Runs";
@@ -16,11 +16,27 @@ const ROUTES: RouteMeta[] = [
   { path: "/security", label: "Security & audit", group: "Security", eyebrow: "TRUST", title: "Security & audit", count: "2" },
   { path: "/consent", label: "Consent", group: "Privacy", eyebrow: "PRIVACY", title: "Consent & data rights", count: "1" },
 ];
-const ROLES = ["Data engineer", "Analyst", "Data subject", "Auditor"];
+/** Polls /healthz so the header can show whether data is live or the API is down
+    (no more guessing whether numbers are real). */
+function useApiStatus(): boolean | null {
+  const [ok, setOk] = useState<boolean | null>(null);
+  useEffect(() => {
+    const base = (import.meta as any).env?.VITE_API_BASE ?? "http://localhost:8000";
+    let alive = true;
+    const ping = () =>
+      fetch(`${base}/healthz`, { signal: AbortSignal.timeout(4000) })
+        .then((r) => alive && setOk(r.ok))
+        .catch(() => alive && setOk(false));
+    ping();
+    const id = setInterval(ping, 10000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+  return ok;
+}
 
 export default function App() {
-  const [role, setRole] = useState(ROLES[0]);
   const loc = useLocation();
+  const apiOk = useApiStatus();
   const meta = ROUTES.find((r) => r.path === loc.pathname) ?? ROUTES[0];
   const groups = [...new Set(ROUTES.map((r) => r.group))];
 
@@ -44,7 +60,7 @@ export default function App() {
               ))}
             </div>
           ))}
-          <div className="nav-foot"><span className="dot">●</span> All systems nominal<br />uptime 99.98% · 6 nodes</div>
+          <div className="nav-foot"><span className="dot">●</span> Piper · local stack<br />RLA pipeline · v0.1</div>
         </nav>
 
         <div className="main">
@@ -55,12 +71,9 @@ export default function App() {
             </div>
             <div className="spacer" />
             <div className="search"><span>⌕</span> Search runs, IDs, controls… <span className="faint mono">⌘/</span></div>
-            <div className="role">
-              <span className="faint" style={{ fontSize: 11 }}>VIEWING AS</span>
-              <select value={role} onChange={(e) => setRole(e.target.value)}>
-                {ROLES.map((r) => <option key={r}>{r}</option>)}
-              </select>
-            </div>
+            <span className={`pill ${apiOk === false ? "danger" : apiOk ? "success" : ""}`} title="Live API connection">
+              <span className="dot" />{apiOk === false ? "API offline" : apiOk ? "live data" : "connecting…"}
+            </span>
           </header>
           <main className="content">
             <Routes>

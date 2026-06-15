@@ -18,7 +18,6 @@ export function Pipeline({ stages }: { stages: Stage[] }) {
           <div key={s.n} className={`node ${s.status === "live" ? "live" : ""}`}>
             <div className="num">{s.n}</div>
             <div className="nm">{s.name}</div>
-            <div className="thru">{s.thru}<span className="u"> r/s</span></div>
             <div className="ctl">{s.note}</div>
           </div>
         ))}

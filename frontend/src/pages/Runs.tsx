@@ -22,7 +22,7 @@ export function Runs() {
       </div>
 
       <Panel eyebrow="OPERATIONS" title={`Run history · ${shown.length}`}>
-        <table className="dt">
+        <div className="table-wrap"><table className="dt">
           <thead><tr><th>Run ID</th><th>Source</th><th className="num">Rows in → out</th><th className="num">Transforms</th><th className="num">Duration</th><th>Outcome</th></tr></thead>
           <tbody>
             {shown.map((r) => (
@@ -36,7 +36,7 @@ export function Runs() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </Panel>
 
       {sel && <RunDrawer run={sel} onClose={() => setSel(null)} />}
@@ -63,18 +63,14 @@ function RunDrawer({ run, onClose }: { run: Run; onClose: () => void }) {
               <span style={{ width: 8, height: 8, borderRadius: 99, background: i === 3 && run.status !== "success" ? "var(--warning)" : "var(--cyan)" }} />
               <div><b style={{ fontSize: 13 }}>{s}</b><div className="faint mono" style={{ fontSize: 11 }}>{run.rows_in.toLocaleString()} → {run.rows_out.toLocaleString()} · {notes[i]}</div></div>
             </div>
-            <span className="num faint">{8 + i * 5}ms</span>
+            <Pill kind="success">applied</Pill>
           </div>
         ))}
         {run.quarantined > 0 && (
           <div className="glass panel" style={{ marginTop: 20, borderColor: "rgba(245,179,66,0.3)" }}>
             <div className="eyebrow" style={{ color: "var(--warning)" }}>QUARANTINE · {run.quarantined} ROWS · dead-letter</div>
-            <div className="mono" style={{ fontSize: 12, marginTop: 10, color: "var(--text-muted)" }}>
-              row · meals.calories · raw "—" · non-numeric in numeric field<br />
-              row · meals.meal_type · raw "brunch" · value outside enum
-            </div>
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-              <button className="btn primary">Reprocess</button><button className="btn">Discard</button>
+            <div className="mono muted" style={{ fontSize: 12, marginTop: 10 }}>
+              {run.quarantined.toLocaleString()} non-conforming row(s) routed to <span className="mono">meta.quarantine</span> for review.
             </div>
           </div>
         )}
