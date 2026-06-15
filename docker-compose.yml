@@ -36,3 +36,19 @@ services:
         condition: service_healthy
     # Stay up so `docker compose exec app ...` / `make` targets can run pipeline commands.
     command: ["sleep", "infinity"]
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    env_file: .env
+    environment:
+      AEGIS_DB_HOST: db
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "8000:8000"   # for live demos behind a tunnel (ngrok/cloudflared) — see ADR-0004/0005
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["uvicorn", "pipeline.api.app:app", "--host", "0.0.0.0", "--port", "8000"]

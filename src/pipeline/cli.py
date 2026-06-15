@@ -63,6 +63,33 @@ def curate(
         typer.echo(f"[curate:{name}] {counts}")
 
 
+@app.command(name="register-device")
+def register_device(
+    device_id: str = typer.Argument(..., help="unique device id"),
+    participant: str = typer.Argument(..., help="source-local subject id this device belongs to"),
+    source: str = typer.Option("wearable-live", help="source name"),
+) -> None:
+    """Register a webhook device: ensures a subject, stores an encrypted HMAC secret."""
+    import secrets as pysecrets
+
+    from pipeline.common.crypto import get_cipher
+    from pipeline.common.db import pg_connection
+    from pipeline.process.pseudonymise import get_or_create_subject
+
+    secret = pysecrets.token_hex(32)
+    cipher = get_cipher()
+    with pg_connection() as conn, conn.cursor() as cur:
+        get_or_create_subject(cur, cipher, source, participant)
+        cur.execute(
+            "INSERT INTO meta.device (device_id, enc_secret, source, source_local_id) "
+            "VALUES (%s, %s, %s, %s) "
+            "ON CONFLICT (device_id) DO UPDATE SET enc_secret = EXCLUDED.enc_secret",
+            (device_id, cipher.encrypt(secret.encode()), source, participant),
+        )
+    typer.echo(f"registered device '{device_id}' -> {source}/{participant}")
+    typer.echo(f"SECRET (shown once, store it on the device): {secret}")
+
+
 @app.command()
 def erase(subject_pid: str = typer.Argument(..., help="subject_pid (UUID) to erase")) -> None:
     """GDPR Art. 17: erase a subject across curated + raw + identity map; write a receipt."""

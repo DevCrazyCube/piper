@@ -42,12 +42,14 @@
 - [x] Retention policy on raw time-series (TimescaleDB) — registered
 - [x] Encrypted 3-2-1 backup script + restore-verify (117M dump, decrypts to valid SQL)
 - [x] SAST (bandit) clean + pip-audit (no CVEs)
-- [ ] DAST-light on the webhook API — after Phase 4 builds it
+- [x] DAST-light on the webhook API — auth-bypass/tamper/replay/stale all rejected (see Phase 4)
 
-## Phase 4 — Real-time ingest
-- [ ] FastAPI webhook ingest (authenticated, validated) — the future-API seam
-- [ ] Auto-export iOS app → webhook for teammates' Apple Watch data
-- [ ] Apple Health `export.zip` fallback importer
+## Phase 4 — Real-time ingest  ✅ (webhook verified; importer deferred)
+- [x] FastAPI webhook ingest (HMAC + timestamp window + nonce replay cache, pydantic-validated)
+- [x] Device registry (encrypted per-device secret) + `register-device` CLI; lands pseudonymous to raw zone
+- [x] Verified live: valid POST 200; tampered/replayed/stale all 401; data landed pseudonymously
+- [ ] Auto-export iOS app → webhook (teammate setup step, not code)
+- [ ] Apple Health `export.zip` fallback importer (deferred — no sample export to verify against)
 - [ ] (Optional) Kafka/Redis Streams queue for the distributed-systems angle
 
 ## Phase 5 — Analyse
