@@ -14,6 +14,7 @@ export interface Anomaly { title: string; detail: string; severity: "HIGH" | "ME
 export interface Control { control: string; article: string; status: "pass" | "attention"; note: string }
 export interface ConsentRow { scope: string; status: "granted" | "revoked"; basis: string; subjects: number }
 export interface SecuritySummary { encryption_coverage: number; failed_access_24h: number; audit_events_24h: number; open_anomalies: number }
+export interface Counts { runs: number; sources: number; anomalies: number; consent: number }
 export interface Overview { vitals: Vital[]; stages: Stage[]; runs: Run[]; sources: Source[] }
 
 async function get<T>(path: string, empty: T): Promise<T> {
@@ -40,4 +41,5 @@ export const api = {
     { encryption_coverage: 0, failed_access_24h: 0, audit_events_24h: 0, open_anomalies: 0 }),
   consent: () => get<ConsentRow[]>("/v1/consent", []),
   subjects: () => get<string[]>("/v1/consent/subjects", []),
+  counts: () => get<Counts>("/v1/counts", { runs: 0, sources: 0, anomalies: 0, consent: 0 }),
 };

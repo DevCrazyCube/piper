@@ -161,7 +161,8 @@ def run_ingest(connector: Connector) -> RunContext:
     with pg_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO meta.pipeline_run (source, kind) VALUES (%s, 'ingest') RETURNING id",
+                "INSERT INTO meta.pipeline_run (source, kind, started_at) "
+                "VALUES (%s, 'ingest', clock_timestamp()) RETURNING id",
                 (connector.source,),
             )
             run_id = cur.fetchone()[0]  # type: ignore[index]
@@ -196,7 +197,7 @@ def _finalize(
 ) -> None:
     with conn.cursor() as cur:
         cur.execute(
-            "UPDATE meta.pipeline_run SET status=%s, finished_at=now(), "
+            "UPDATE meta.pipeline_run SET status=%s, finished_at=clock_timestamp(), "
             "rows_in=%s, rows_out=%s, rows_quarantined=%s, detail=%s WHERE id=%s",
             (status, ctx.rows_in, ctx.rows_out, ctx.rows_quarantined,
              Json(detail or {}), ctx.run_id),

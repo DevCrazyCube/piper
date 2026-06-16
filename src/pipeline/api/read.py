@@ -56,6 +56,17 @@ def _ago(age_s: float | None) -> str:
     return f"{int(age_s // 86400)}d ago"
 
 
+@router.get("/counts")
+def counts() -> dict:
+    """Real badge counts for the nav (0 when empty — never hardcoded)."""
+    return {
+        "runs": int(_scalar("SELECT count(*) FROM meta.pipeline_run")),
+        "sources": int(_scalar("SELECT count(*) FROM meta.source")),
+        "anomalies": int(_scalar("SELECT count(*) FROM meta.v_anomaly")),
+        "consent": int(_scalar("SELECT count(DISTINCT scope) FROM consent.consent")),
+    }
+
+
 @router.get("/runs")
 def runs() -> list[dict]:
     def m(r: dict) -> dict:
