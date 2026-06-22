@@ -65,9 +65,10 @@ def _numeric(value: Any) -> float | None:
 
 class PMDataConnector(Connector):
     source = "pmdata"
+    dataset_file = "pmdata.zip"
 
     def run(self, ctx: RunContext) -> None:
-        path = get_settings().datasets_dir / "pmdata.zip"
+        path = get_settings().datasets_dir / self.dataset_file
         with zipfile.ZipFile(path) as zf:
             names = set(zf.namelist())
             participants = sorted(

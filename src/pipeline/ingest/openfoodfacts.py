@@ -36,9 +36,10 @@ _LIMIT = 50_000  # reference-table seed size for Phase 1
 
 class OpenFoodFactsConnector(Connector):
     source = "openfoodfacts"
+    dataset_file = "food.parquet"
 
     def run(self, ctx: RunContext) -> None:
-        path = get_settings().datasets_dir / "food.parquet"
+        path = get_settings().datasets_dir / self.dataset_file
         lf = pl.scan_parquet(path)
         available = set(lf.collect_schema().names())
         cols = [c for c in _DESIRED if c in available]

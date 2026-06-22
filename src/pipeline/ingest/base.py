@@ -12,6 +12,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 
 import psycopg
 from psycopg.types.json import Json
@@ -151,9 +152,22 @@ class Connector(ABC):
     """A batch source connector. Subclasses set `source` and implement `run`."""
 
     source: str
+    # The file (relative to the datasets dir) this connector needs, if any. Used to skip
+    # a source gracefully when its dataset isn't present — datasets are gitignored and
+    # shared out of band, so a fresh clone often has only some of them (or none).
+    dataset_file: str | None = None
 
     @abstractmethod
     def run(self, ctx: RunContext) -> None: ...
+
+    def missing_dataset(self) -> Path | None:
+        """Expected dataset path if it's declared but absent on disk, else None."""
+        if not self.dataset_file:
+            return None
+        from pipeline.common.config import get_settings
+
+        path = get_settings().datasets_dir / self.dataset_file
+        return None if path.exists() else path
 
 
 def run_ingest(connector: Connector) -> RunContext:

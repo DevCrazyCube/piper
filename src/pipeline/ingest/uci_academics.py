@@ -20,9 +20,10 @@ _ARFF_NAME = "Sapfile1.arff"
 
 class UCIAcademicsConnector(Connector):
     source = "uci-academics"
+    dataset_file = "student+academics+performance.zip"
 
     def run(self, ctx: RunContext) -> None:
-        path = get_settings().datasets_dir / "student+academics+performance.zip"
+        path = get_settings().datasets_dir / self.dataset_file
         with zipfile.ZipFile(path) as zf:
             with zf.open(_ARFF_NAME) as fh:
                 text = io.TextIOWrapper(fh, encoding="utf-8", errors="replace")

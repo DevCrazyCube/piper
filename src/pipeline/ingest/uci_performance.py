@@ -21,9 +21,10 @@ _INNER_FILES = {"mat": "student-mat.csv", "por": "student-por.csv"}
 
 class UCIPerformanceConnector(Connector):
     source = "uci-performance"
+    dataset_file = "student+performance.zip"
 
     def run(self, ctx: RunContext) -> None:
-        path = get_settings().datasets_dir / "student+performance.zip"
+        path = get_settings().datasets_dir / self.dataset_file
         with zipfile.ZipFile(path) as outer:
             inner_bytes = outer.read("student.zip")
         with zipfile.ZipFile(io.BytesIO(inner_bytes)) as inner:

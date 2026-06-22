@@ -30,15 +30,35 @@ _CONNECTORS: dict[str, type[Connector]] = {
 def ingest(
     source: str = typer.Argument(..., help=f"One of: {', '.join(_CONNECTORS)}, or 'all'"),
 ) -> None:
-    """Ingest a source's raw data into the raw zone."""
+    """Ingest a source's raw data into the raw zone.
+
+    Datasets are gitignored and shared out of band, so the datasets/ folder may hold only
+    some sources (or none). A source whose dataset file is missing is skipped with a notice
+    — never an error — so `make ingest` always succeeds with whatever data is present.
+    """
     targets = list(_CONNECTORS) if source == "all" else [source]
     for name in targets:
         if name not in _CONNECTORS:
             raise typer.BadParameter(f"unknown source '{name}'. Choices: {', '.join(_CONNECTORS)}, all")
+    ran = 0
     for name in targets:
-        ctx = run_ingest(_CONNECTORS[name]())
+        connector = _CONNECTORS[name]()
+        missing = connector.missing_dataset()
+        if missing is not None:
+            typer.secho(
+                f"[{name}] skipped — dataset not found at {missing} (place the file to ingest it)",
+                fg=typer.colors.YELLOW,
+            )
+            continue
+        ctx = run_ingest(connector)
+        ran += 1
         typer.echo(
             f"[{name}] in={ctx.rows_in} out={ctx.rows_out} quarantined={ctx.rows_quarantined}"
+        )
+    if ran == 0:
+        typer.secho(
+            "no datasets present to ingest — nothing to do (this is fine).",
+            fg=typer.colors.YELLOW,
         )
 
 
