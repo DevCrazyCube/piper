@@ -1,5 +1,5 @@
 # Piper pipeline — common flows (ADR-0010: CLI + Make, no heavyweight orchestrator).
-.PHONY: help up down logs build migrate shell ingest ingest-pmdata ingest-uci-perf \
+.PHONY: help init-env up down logs build migrate shell ingest ingest-pmdata ingest-uci-perf \
         ingest-uci-academics ingest-food lint test sast audit check
 
 DC := docker compose
@@ -8,7 +8,18 @@ EXEC := $(DC) exec app
 help:                ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-22s %s\n", $$1, $$2}'
 
-up:                  ## Start the stack (db + app)
+init-env:            ## Create .env from .env.example with a generated master key (no-op if .env exists)
+	@if [ -f .env ]; then \
+		echo ".env already exists — leaving it untouched."; \
+	else \
+		cp .env.example .env; \
+		KEY=$$(openssl rand -base64 32 2>/dev/null || python3 -c "import os,base64;print(base64.b64encode(os.urandom(32)).decode())"); \
+		sed -i.bak "s|^PIPER_MASTER_KEY=.*|PIPER_MASTER_KEY=$$KEY|" .env && rm -f .env.bak; \
+		echo "Created .env from .env.example and generated PIPER_MASTER_KEY."; \
+		echo "Default dev passwords are set — change them before any real deployment."; \
+	fi
+
+up: init-env         ## Start the stack (auto-creates .env on first run)
 	$(DC) up -d --build
 
 down:                ## Stop the stack

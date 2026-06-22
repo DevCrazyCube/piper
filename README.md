@@ -50,23 +50,24 @@ in **Docker** — you don't install Python or Postgres yourself.
 
 ## First-run setup
 
+Clone the repo and run **one command** — no manual config needed:
+
 ```bash
-# 1. Create your local config from the template
-cp .env.example .env
-
-# 2. Fill in the three secrets in .env:
-#    - PIPER_DB_PASSWORD     : any strong password
-#    - PIPER_APP_PASSWORD    : any strong password (the non-superuser runtime role)
-#    - PIPER_MASTER_KEY      : generate with the command below
-python -c "import os,base64;print(base64.b64encode(os.urandom(32)).decode())"
-#    paste the output as PIPER_MASTER_KEY=...
-
-# 3. Start the stack + create the schema + create the app role
-make setup        # = docker compose up -d  +  migrate  +  bootstrap
+make setup        # = init-env  +  docker compose up -d  +  migrate  +  bootstrap
 ```
 
-`make setup` starts three services (`db`, `app`, `api`), applies all DB migrations (schema,
-TimescaleDB hypertables, roles, row-level security), and sets the runtime role's password.
+That's it. On a fresh clone `make setup` will:
+
+1. **`init-env`** — create `.env` from `.env.example` and **generate a fresh `PIPER_MASTER_KEY`**
+   for you (uses `openssl`, falling back to `python3`). If `.env` already exists it's left untouched.
+2. **`up`** — start the services (`db`, `app`, `api`, `frontend`).
+3. **`migrate`** — apply all DB migrations (schema, TimescaleDB hypertables, roles, row-level security).
+4. **`bootstrap`** — set the non-superuser runtime role's password.
+
+The generated `.env` ships with working **dev defaults** for the database/app passwords, so it runs
+out of the box. **Change `PIPER_DB_PASSWORD` / `PIPER_APP_PASSWORD` before any real deployment.**
+Prefer to set secrets yourself first? Just `cp .env.example .env`, edit it, then `make setup` — your
+file is kept as-is.
 
 ---
 

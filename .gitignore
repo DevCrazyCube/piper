@@ -46,8 +46,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-/lib/
-/lib64/
 parts/
 sdist/
 var/
@@ -55,6 +53,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+# NOTE: /lib/ and /lib64/ are intentionally NOT ignored — the frontend keeps source
+# under frontend/src/lib (e.g. motion.ts) and teammates were losing it. Build output
+# lives in build/ (already ignored above), so we don't need a blanket lib/ rule.
 .venv/
 venv/
 env/
