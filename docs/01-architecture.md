@@ -38,8 +38,9 @@ is stages **01 → 04 → 03**. The full lifecycle adds the controls around it.
   │ Open Food F. │      │  │  format-aware)  │      │   JSON health events)   │  │   via auto-export
   │ UCI Academics│      │  └───────┬─────────┘      └───────────┬─────────────┘  │   iOS app
   └─────────────┘       │          │                            │                │
-  Apple Health export ──┼──────────┘         (optional queue:   │   + Calendar API
-       (fallback)       │                     Kafka/Redis Stream)│   + LMS export
+  Apple Health export ──┼──────────┘         (optional queue:   │   (planned seams:
+   (fallback, planned)  │                     Kafka/Redis Stream)│    Calendar API,
+                        │                                        │    LMS export)
                         └──────────────────────┬─────────────────┘
                                                 ▼
                                     ┌───────────────────────┐
@@ -47,7 +48,7 @@ is stages **01 → 04 → 03**. The full lifecycle adds the controls around it.
                                     │  pandas / polars       │   dedup · harmonise schemas
                                     │  validation (pydantic) │   pseudonymise · quality checks
                                     └───────────┬───────────┘
-                                                ▼ (encrypted in transit, TLS)
+                                                ▼ (TLS planned — not in local stack)
                                     ┌───────────────────────┐
                                     │  STORE                 │   encryption at rest
                                     │  PostgreSQL +          │   hypertables (time-series)
@@ -68,7 +69,9 @@ is stages **01 → 04 → 03**. The full lifecycle adds the controls around it.
 
 1. **Ingest** — a connector reads a source (file or webhook payload) into a typed staging
    record. Raw payloads land in a quarantined **raw zone** (write-once, access-restricted).
-2. **Transport** — all movement is over TLS; internal service-to-service too. Nothing in clear.
+2. **Transport** — TLS is **planned** (terminate at a gateway / reverse proxy in front of the API),
+   not enabled in the local stack: docker-compose exposes Postgres on plain 5432 and the API on plain
+   http:8000 (see README and `04-security.md`). The design target is TLS for all external movement.
 3. **Process** — format-specific cleaning (delimiters, encoding fixes, date parsing), filtering
    (drop junk / out-of-range), normalization (units, scales), deduplication (cross-file student
    merge), schema harmonisation (dataset 2 vs 4), and **pseudonymisation** (replace direct

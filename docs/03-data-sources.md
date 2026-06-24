@@ -42,13 +42,17 @@
 - **⚠️ No shared key:** PMData meals are free-text Google-Forms entries; Open Food Facts is product
   records. Linking them is a **fuzzy string-matching** problem (with a confidence threshold), not a
   JOIN — scope it as *best-effort enrichment*, not guaranteed coverage.
-- **Messiness:** columns like `origins`, `traces`, `generic_name` >90% missing; inconsistent
-  Nutri-Score; mixed-language entries; **three date formats in one file** (UNIX, ISO 8601, plain
-  text).
-- **Formats:** originally TSV (tab-separated) + optional SQLite; we have Parquet (efficient,
-  columnar — good for the 7 GB size).
-- **Pipeline handling:** load a curated **subset of columns** (data minimisation!), normalize
-  dates, key by product for meal-log joins. Likely a read-only **reference table**, not per-subject.
+- **Messiness:** very wide source (150+ columns) with many fields >90% missing; inconsistent
+  Nutri-Score; mixed-language entries; nutrition is a **nested `nutriments` struct** (a
+  `List(Struct{name, value, '100g', unit, ...})`), not flat per-100g columns, so it must be flattened
+  downstream rather than read directly.
+- **Formats:** the upstream dump is TSV; **we ingest the converted `food.parquet`** (efficient,
+  columnar — good for the 7 GB size). The connector (`src/pipeline/ingest/openfoodfacts.py`) scans
+  the parquet and selects only ~9 columns.
+- **Pipeline handling:** load a curated **subset of ~9 columns** (data minimisation!), flatten
+  `nutriments` to per-100g values in curation (`curated.food_reference`), key by product for meal-log
+  joins. Read-only **reference table**, not per-subject. *(No date parsing: the connector selects no
+  date column, so the "three date formats" normalisation is not part of the OFF path.)*
 
 ### Dataset 4 — UCI Student Academics Performance
 - **Source:** archive.ics.uci.edu/ml/datasets/Student+Academics+Performance · **License:** open

@@ -116,10 +116,10 @@ monitoring" idea, kept lightweight.
 |---|---|
 | 01 Ingest | authn (API key + HMAC/nonce) on webhook; input validation; data minimisation; idempotent loads; raw zone write-once + checksum; failed rows → quarantine |
 | 02 Transport | TLS 1.3 everywhere; no clear-text movement |
-| 03 Store | encryption at rest; `pgcrypto` for sensitive fields; RLS; constraints; least-priv grants |
+| 03 Store | encryption at rest; **app-layer AES-256-GCM on the identity map** (not `pgcrypto`); RLS; constraints; least-priv grants |
 | 04 Process | pseudonymisation; parameterised SQL; validation; decisions logged (audit + bias doc) |
 | 05 Analyse | query curated views only; aggregate outputs; never expose raw identifiers |
-| 06 Access | RBAC + least privilege; RLS binds rows to subject + consent; MFA for admin |
+| 06 Access | RBAC + least privilege; RLS binds rows to subject + consent; MFA for admin _(planned — not implemented; no human-credential surface yet, see §3)_ |
 | 07 Monitor | append-only audit logs; anomaly detection; SAST/DAST in CI |
 | 08 Delete | verified erasure incl. backups; deletion receipt; cascade across curated + raw + logs-of-data |
 

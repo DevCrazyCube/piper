@@ -32,8 +32,11 @@ compatible with the group's other pillars (GDPR/legal, Privacy by Design, Bias/f
 
 ## 3. In scope
 
-- Dual ingest: **batch** (4 datasets, Apple Health export zip) + **near-real-time webhook**
-  (auto-export iOS app POSTing health JSON; same pattern for calendar + LMS).
+- Dual ingest: **batch** (4 dataset file connectors) + **near-real-time webhook**
+  (auto-export iOS app POSTing health JSON; calendar + LMS are planned seams on the same pattern).
+  The Apple Health **export-zip** fallback importer is **deferred / not yet implemented** (see
+  `07-roadmap.md`); `cli.py` registers only the pmdata / uci-performance / uci-academics /
+  openfoodfacts connectors.
 - Cleaning / filtering / normalization / deduplication / schema harmonisation.
 - Pseudonymisation, encryption at rest + in transit, RBAC + row-level security, audit logging.
 - Consolidated **PostgreSQL + TimescaleDB** storage.
@@ -55,7 +58,7 @@ compatible with the group's other pillars (GDPR/legal, Privacy by Design, Bias/f
 |---|---|
 | Language | **Python** (course is Python/pandas-centric; Week 6) |
 | Storage | **PostgreSQL + TimescaleDB**, consolidated single engine |
-| Ingest | **Dual**: batch file connectors + authenticated webhook + export-zip fallback |
+| Ingest | **Dual**: batch file connectors + authenticated webhook (+ export-zip fallback, _deferred_) |
 | Runtime | **Docker Compose**, local |
 | Frontend | **Deferred** (clean API seam preserved) |
 
