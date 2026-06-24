@@ -10,7 +10,7 @@ from __future__ import annotations
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from pipeline.api.auth import verify
+from pipeline.api.auth import WINDOW_SECONDS, verify
 from pipeline.api.models import IngestRequest
 from pipeline.api.read import router as read_router
 from pipeline.common.crypto import aad_for, get_cipher
@@ -74,6 +74,15 @@ async def ingest(
         if cur.fetchone() is None:
             log.warning("api.replay", device=x_piper_device)
             raise unauthorized
+
+        # Bounded retention: the freshness window (WINDOW_SECONDS) already rejects stamps
+        # older than 5 min, so nonces past that window can never be replayed and are pruned
+        # here to keep meta.webhook_nonce from growing unbounded over a live feed.
+        cur.execute(
+            "DELETE FROM meta.webhook_nonce "
+            "WHERE seen_at < now() - make_interval(secs => %s)",
+            (WINDOW_SECONDS + 900,),
+        )
 
         # Validate payload (pydantic) -> 422 on malformed.
         try:

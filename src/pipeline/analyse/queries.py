@@ -38,11 +38,16 @@ QUERIES: list[Query] = [
     Query(
         "q2", "Weekly activity-minutes cohort trend", "health",
         """
-        SELECT time_bucket('7 days', ts)::date AS week,
-               round(avg(value)::numeric, 1)    AS avg_active_min,
-               count(DISTINCT subject_pid)      AS n_subjects
-        FROM curated.timeseries
-        WHERE metric IN ('lightly_active_minutes','moderately_active_minutes','very_active_minutes')
+        WITH daily AS (
+            SELECT subject_pid, time_bucket('1 day', ts) AS d, sum(value) AS active_min
+            FROM curated.timeseries
+            WHERE metric IN ('lightly_active_minutes','moderately_active_minutes','very_active_minutes')
+            GROUP BY subject_pid, d
+        )
+        SELECT time_bucket('7 days', d, TIMESTAMPTZ '2000-01-03')::date AS week,
+               round(avg(active_min)::numeric, 1)                       AS avg_active_min,
+               count(DISTINCT subject_pid)                              AS n_subjects
+        FROM daily
         GROUP BY week
         HAVING count(DISTINCT subject_pid) >= %(k)s
         ORDER BY week
@@ -65,11 +70,17 @@ QUERIES: list[Query] = [
     Query(
         "q4", "Sleep vs activity correlation (cohort)", "health",
         """
-        WITH per_subject AS (
+        WITH daily_steps AS (
+            SELECT subject_pid, time_bucket('1 day', ts) AS d, sum(value) AS steps
+            FROM curated.timeseries
+            WHERE metric = 'steps'
+            GROUP BY subject_pid, d
+        ),
+        per_subject AS (
             SELECT s.subject_pid,
                    avg(s.minutes_asleep) AS avg_sleep_min,
-                   (SELECT avg(value) FROM curated.timeseries t
-                     WHERE t.subject_pid = s.subject_pid AND t.metric = 'steps') AS avg_steps
+                   (SELECT avg(steps) FROM daily_steps ds
+                     WHERE ds.subject_pid = s.subject_pid) AS avg_steps
             FROM curated.sleep s
             GROUP BY s.subject_pid
         )

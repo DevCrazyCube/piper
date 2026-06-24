@@ -54,6 +54,7 @@ class RunContext:
     _records: list[tuple] = field(default_factory=list)
     _points: list[tuple] = field(default_factory=list)
     _stage_ready: bool = False
+    _staged: int = 0
 
     # -- emit API used by connectors --------------------------------------
     def record(self, rec: RawRecord) -> None:
@@ -133,7 +134,7 @@ class RunContext:
             ) as cp:
                 for row in self._points:
                     cp.write_row(row)
-        self.rows_out += len(self._points)
+        self._staged += len(self._points)
         self._points.clear()
 
     def commit_timeseries(self) -> None:
@@ -146,6 +147,11 @@ class RunContext:
                 "SELECT source, participant, metric, ts, value, run_id FROM _ts_stage "
                 "ON CONFLICT (source, participant, metric, ts) DO NOTHING"
             )
+        # Only count points as written once they actually land in the hypertable. On the
+        # failure path commit_timeseries() is skipped and _ts_stage (ON COMMIT DROP) is
+        # discarded, so those staged points must not inflate rows_out.
+        self.rows_out += self._staged
+        self._staged = 0
 
 
 class Connector(ABC):
