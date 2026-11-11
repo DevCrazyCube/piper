@@ -13,7 +13,7 @@ export interface AuditEvent { t: string; action: string; object: string; actor: 
 export interface Anomaly { title: string; detail: string; severity: "HIGH" | "MED" | "LOW" }
 export interface Control { control: string; article: string; status: "pass" | "attention"; note: string }
 export interface ConsentRow { scope: string; status: "granted" | "revoked"; basis: string; subjects: number }
-export interface SecuritySummary { encryption_coverage: number; failed_access_24h: number; audit_events_24h: number; open_anomalies: number }
+export interface SecuritySummary { identities_encrypted: number; identities_total: number; failed_access_24h: number; audit_events_24h: number; open_anomalies: number }
 export interface Counts { runs: number; sources: number; anomalies: number; consent: number }
 export interface Overview { vitals: Vital[]; stages: Stage[]; runs: Run[]; sources: Source[] }
 
@@ -38,7 +38,7 @@ export const api = {
   anomalies: () => get<Anomaly[]>("/v1/security/anomalies", []),
   controls: () => get<Control[]>("/v1/security/compliance", []),
   securitySummary: () => get<SecuritySummary>("/v1/security/summary",
-    { encryption_coverage: 0, failed_access_24h: 0, audit_events_24h: 0, open_anomalies: 0 }),
+    { identities_encrypted: 0, identities_total: 0, failed_access_24h: 0, audit_events_24h: 0, open_anomalies: 0 }),
   consent: () => get<ConsentRow[]>("/v1/consent", []),
   subjects: () => get<string[]>("/v1/consent/subjects", []),
   counts: () => get<Counts>("/v1/counts", { runs: 0, sources: 0, anomalies: 0, consent: 0 }),
