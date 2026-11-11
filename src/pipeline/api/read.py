@@ -35,6 +35,36 @@ def _scalar(sql: str, default: float = 0) -> float:
         return default
 
 
+# An AES-256-GCM token is nonce(12) + ciphertext + tag(16): anything shorter cannot be one.
+_MIN_TOKEN_BYTES = 28
+
+
+def _identity_encryption() -> tuple[int, int]:
+    """(identities whose stored value has the AES-GCM envelope, identities stored).
+
+    A count of what is in id.subject, read without decrypting: this API never turns a
+    pseudonym back into an identity. It says the stored value has the shape of a token,
+    not that it decrypts; `piper` CLI paths that decrypt are where that is proven.
+    """
+    total = int(_scalar("SELECT count(*) FROM id.subject"))
+    # 28 = _MIN_TOKEN_BYTES, written out so the statement stays a plain literal.
+    enveloped = int(_scalar(
+        "SELECT count(*) FROM id.subject WHERE octet_length(enc_identity) >= 28"
+    ))
+    return enveloped, total
+
+
+def _identity_vital() -> dict:
+    enveloped, total = _identity_encryption()
+    if total == 0:
+        return {"label": "Identities encrypted", "value": "0", "sub": "none stored yet"}
+    return {
+        "label": "Identities encrypted", "value": str(enveloped),
+        "sub": f"of {total} · AES-256-GCM field level",
+        "tone": "ok" if enveloped == total else "bad",
+    }
+
+
 def _fmt(n: float) -> tuple[str, str | None]:
     """Compact human number -> (value, unit) for the KPI ribbon."""
     if n >= 1_000_000:
@@ -140,8 +170,8 @@ def sources() -> list[dict]:
 
 STAGES = [
     {"n": "01", "name": "Ingest", "thru": "—", "note": "validated · idempotent", "status": "ok"},
-    {"n": "02", "name": "Transport", "thru": "—", "note": "TLS 1.3 (planned)", "status": "ok"},
-    {"n": "03", "name": "Store", "thru": "—", "note": "AES-256 at rest", "status": "ok"},
+    {"n": "02", "name": "Transport", "thru": "—", "note": "TLS 1.3 (planned)", "status": "idle"},
+    {"n": "03", "name": "Store", "thru": "—", "note": "identity fields AES-256-GCM", "status": "ok"},
     {"n": "04", "name": "Process", "thru": "—", "note": "clean · pseudonymise", "status": "ok"},
     {"n": "05", "name": "Analyse", "thru": "—", "note": "aggregate only", "status": "ok"},
     {"n": "06", "name": "Access", "thru": "RBAC", "note": "row-level security", "status": "ok"},
@@ -175,7 +205,7 @@ def _vitals() -> list[dict]:
         {"label": "Quarantined rows", "value": str(int(quarantined)),
          "sub": "awaiting review" if quarantined else "clean", "tone": "warn" if quarantined else "ok"},
         {"label": "Data sources", "value": str(int(sources_n)), "sub": "registered"},
-        {"label": "Encryption coverage", "value": "100", "unit": "%", "sub": "transit + at rest", "tone": "ok"},
+        _identity_vital(),
     ]
 
 
@@ -287,12 +317,14 @@ def security_summary() -> dict:
             failed_24h = int(cur.fetchone()[0])  # type: ignore[index]
             cur.execute("SELECT count(*) FROM meta.v_anomaly")
             open_anomalies = int(cur.fetchone()[0])  # type: ignore[index]
+        enveloped, total = _identity_encryption()
         return {
-            "encryption_coverage": 100, "failed_access_24h": failed_24h,
+            "identities_encrypted": enveloped, "identities_total": total,
+            "failed_access_24h": failed_24h,
             "audit_events_24h": audit_24h, "open_anomalies": open_anomalies,
         }
     except Exception:
-        return {"encryption_coverage": 100, "failed_access_24h": 0,
+        return {"identities_encrypted": 0, "identities_total": 0, "failed_access_24h": 0,
                 "audit_events_24h": 0, "open_anomalies": 0}
 
 
@@ -320,7 +352,7 @@ def anomalies() -> list[dict]:
 # Compliance posture is a design attestation (not runtime data); served here so the
 # dashboard has a single source of truth rather than a hardcoded frontend copy.
 _CONTROLS = [
-    {"control": "Security of processing", "article": "GDPR Art.32", "status": "pass", "note": "AES-256-GCM at rest"},
+    {"control": "Security of processing", "article": "GDPR Art.32", "status": "pass", "note": "AES-256-GCM on identity fields"},
     {"control": "Protection by design", "article": "GDPR Art.25", "status": "pass", "note": "pseudonymisation default"},
     {"control": "Data minimisation", "article": "GDPR Art.5", "status": "pass", "note": "minimised reference subsets"},
     {"control": "Right to erasure", "article": "GDPR Art.17", "status": "pass", "note": "cascade + receipt"},

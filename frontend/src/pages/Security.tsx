@@ -9,13 +9,13 @@ export function Security() {
   const audit = useData(api.audit, []);
   const anomalies = useData(api.anomalies, []);
   const controls = useData(api.controls, []);
-  const sum = useData(api.securitySummary, { encryption_coverage: 100, failed_access_24h: 0, audit_events_24h: 0, open_anomalies: 0 });
+  const sum = useData(api.securitySummary, { identities_encrypted: 0, identities_total: 0, failed_access_24h: 0, audit_events_24h: 0, open_anomalies: 0 });
   const pass = controls.filter((c) => c.status === "pass").length;
 
   return (
     <div ref={ref}>
       <div className="grid cols-4" style={{ marginTop: 4 }}>
-        <Stat v={{ label: "Encryption coverage", value: String(sum.encryption_coverage), unit: "%", sub: "verified at rest", tone: "ok" }} />
+        <Stat v={{ label: "Identities encrypted", value: sum.identities_encrypted.toLocaleString(), sub: sum.identities_total ? `of ${sum.identities_total.toLocaleString()} · AES-256-GCM field level` : "none stored yet", tone: sum.identities_encrypted === sum.identities_total ? "ok" : "bad" }} />
         <Stat v={{ label: "Failed access · 24h", value: String(sum.failed_access_24h), sub: sum.failed_access_24h ? "all denied & logged" : "none denied", tone: sum.failed_access_24h ? "warn" : "ok" }} />
         <Stat v={{ label: "Open anomalies", value: String(sum.open_anomalies), sub: sum.open_anomalies ? "awaiting review" : "none open", tone: sum.open_anomalies ? "warn" : "ok" }} />
         <Stat v={{ label: "Audit events · 24h", value: sum.audit_events_24h.toLocaleString(), sub: "append-only ledger", tone: "ok" }} />
@@ -39,7 +39,7 @@ export function Security() {
 
         <div>
           <Panel eyebrow="" title="Encryption & controls">
-            {[["At rest", "AES-256-GCM"], ["In transit", "TLS 1.3 (planned)"], ["Key separation", "HKDF per-purpose"], ["Pseudonymisation", "active"]].map(([k, v]) => (
+            {[["Identity fields", "AES-256-GCM"], ["In transit", "TLS 1.3 (planned)"], ["Key separation", "HKDF per-purpose"], ["Pseudonymisation", "active"]].map(([k, v]) => (
               <div key={k} className="row-between" style={{ padding: "9px 0", borderBottom: "1px solid rgba(120,150,200,0.06)" }}>
                 <span className="muted">{k}</span><span className="mono" style={{ color: "var(--cyan)", fontSize: 12 }}>{v}</span>
               </div>

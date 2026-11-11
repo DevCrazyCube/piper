@@ -40,6 +40,31 @@ in **Docker** — you don't install Python or Postgres yourself.
 
 ---
 
+## What it looks like
+
+The dashboard on a fresh stack, after ingesting and curating the two small UCI datasets that ship
+in `datasets/` (the wearables sets are not shipped, so the health panels are empty here).
+
+| Overview | Security & audit |
+| --- | --- |
+| ![Pipeline overview: rows ingested, runs, the eight lifecycle stages, recent runs, ingest health](docs/screenshots/overview.png) | ![Security and audit: identities encrypted, failed access, anomalies, controls, compliance posture](docs/screenshots/security.png) |
+
+![Analytics: aggregate-only results, the two academic questions filled from the UCI data](docs/screenshots/analytics.png)
+
+What the numbers mean:
+
+- **Identities encrypted** is counted from the identity table (rows whose stored value is long
+  enough to be an AES-256-GCM envelope), without decrypting. It is not a fixed "100 %".
+- **Transport** shows as *planned*: TLS is not set up in this local stack.
+- The compliance cards are a design checklist written by hand, not a runtime measurement or an audit.
+
+Checked on this state of the repo: `pytest` 46 passed, `ruff` and `mypy` clean, migrations to
+head, both UCI ingests (1044 and 131 rows in and out), curate, analyses Q3 and Q5, and the three
+health queries. Not checked: the PMData and Open Food Facts ingests (data not shipped), the live
+webhook with a real device, backups and restore.
+
+---
+
 ## Prerequisites
 
 - **Docker** + **Docker Compose** (that's it — Python, Postgres, all libraries run inside containers).

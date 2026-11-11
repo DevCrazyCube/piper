@@ -46,7 +46,7 @@ export function Runs() {
 
 function RunDrawer({ run, onClose }: { run: Run; onClose: () => void }) {
   const stages = ["Ingest", "Transport", "Store", "Process", "Analyse", "Access", "Monitor", "Delete"];
-  const notes = ["TLS 1.3", "in transit", "AES-256 at rest", "dedup · pseudonymise", "aggregate", "RBAC", "logged", "auto-erasure"];
+  const notes = ["validated · idempotent", "TLS 1.3 (planned)", "identity fields AES-256-GCM", "dedup · pseudonymise", "aggregate", "RBAC", "logged", "auto-erasure"];
   return (
     <>
       <div className="scrim" onClick={onClose} />
@@ -63,7 +63,7 @@ function RunDrawer({ run, onClose }: { run: Run; onClose: () => void }) {
               <span style={{ width: 8, height: 8, borderRadius: 99, background: i === 3 && run.status !== "success" ? "var(--warning)" : "var(--cyan)" }} />
               <div><b style={{ fontSize: 13 }}>{s}</b><div className="faint mono" style={{ fontSize: 11 }}>{run.rows_in.toLocaleString()} → {run.rows_out.toLocaleString()} · {notes[i]}</div></div>
             </div>
-            <Pill kind="success">applied</Pill>
+            {s === "Transport" ? <Pill kind="">planned</Pill> : <Pill kind="success">applied</Pill>}
           </div>
         ))}
         {run.quarantined > 0 && (
